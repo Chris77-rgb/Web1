@@ -223,8 +223,8 @@ export function Editor({ project, planCode, sharePercent }: { project: EditorPro
           <Button variant="ghost" size="sm" onClick={redo} disabled={!future.current.length} aria-label="Rehacer" title="Rehacer (Ctrl+Shift+Z)"><Redo2 className="size-4" /></Button>
           <ThemeToggle />
         </div>
-        <Button variant="outline" onClick={goBuild} size="sm" className="hidden md:inline-flex" title="Generar un archivo APK/AAB para Android"><Hammer className="size-4" />APK</Button>
-        <Button onClick={() => setPublishOpen(true)} size="sm"><Globe className="size-4" /><span className="hidden sm:inline">{live.liveRevision !== null ? "Publicada" : "Publicar"}</span></Button>
+        <Button variant="outline" onClick={() => setPublishOpen(true)} size="sm" title="Publicar también como página web"><Globe className="size-4" /><span className="hidden lg:inline">{live.liveRevision !== null ? "Web publicada" : "Publicar web"}</span></Button>
+        <Button onClick={goBuild} size="sm"><Hammer className="size-4" /><span className="hidden sm:inline">Generar APK / AAB</span></Button>
       </header>
 
       {errors.length > 0 && (

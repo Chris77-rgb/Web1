@@ -102,7 +102,6 @@ Ver [`.env.example`](.env.example). Importante: **no cambies `ENCRYPTION_KEY`** 
 ## Pendiente / siguientes pasos
 
 - **Contratación de Adfree** con Stripe (hoy se concede desde el admin) y facturación a anunciantes.
-- Anuncios en el APK/AAB (hoy solo en la versión web).
 - **Envío de notificaciones push** desde el panel: los dispositivos ya se registran (FCM), falta la pantalla de envío con la cuenta de servicio de Firebase.
 - **Almacenamiento S3** (hoy disco local compartido; la interfaz `Storage` está preparada).
 - **Rate limiting distribuido** con Redis cuando haya varias instancias web (hoy en memoria por proceso).

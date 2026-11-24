@@ -12,9 +12,13 @@ export const GET = route<{ params: Promise<{ projectId: string }> }>(async (req,
   const { projectId } = await params;
   const none = () => ok({ source: "none" }, 200);
   if (!/^[a-z0-9]{10,40}$/i.test(projectId)) return none();
-  const project = await db.project.findUnique({ where: { id: projectId }, select: { id: true, status: true, publishedConfig: true, adfreeUntil: true } });
-  if (!project || project.status !== "PUBLISHED" || !project.publishedConfig) return none();
-  const v = validateAppConfig(project.publishedConfig);
+  // Installed APK/AAB apps (src=app) follow the project's current config; web pages follow what is published.
+  const fromApp = req.nextUrl.searchParams.get("src") === "app";
+  const project = await db.project.findUnique({ where: { id: projectId }, select: { id: true, status: true, config: true, publishedConfig: true, adfreeUntil: true } });
+  if (!project || project.status === "ARCHIVED") return none();
+  const live = fromApp ? project.config : project.status === "PUBLISHED" ? project.publishedConfig : null;
+  if (!live) return none();
+  const v = validateAppConfig(live);
   if (!v.ok) return none();
 
   const raw = req.nextUrl.searchParams.get("v") ?? "";

@@ -3,11 +3,11 @@
  *  - web mode: asks the platform which ad this visitor sees (Forjapp's or the creator's),
  *    so the 80/20 split and the Adfree rule are decided server-side and can't be tampered with.
  *  - preview mode: shows the creator's banner plus a note explaining Forjapp's share.
- *  - app mode (APK): no ads.
+ *  - app mode (APK/AAB): same as web; the visitor id is kept in the WebView's storage and links open the browser.
  */
 import type { AppConfig } from "@forjapp/shared";
 import { h } from "./dom";
-import { assetUrl, env, safeUrl } from "./platform";
+import { assetUrl, env, openExternal, safeUrl, storage } from "./platform";
 
 interface Decision {
   source: "forjapp" | "creator" | "none";
@@ -22,10 +22,31 @@ function creatorAd(cfg: AppConfig) {
   return a && a.enabled && a.imageUrl && a.linkUrl ? a : null;
 }
 
+/** Anonymous id that keeps a visitor in the same ad bucket. The web shell provides it; the APK stores its own. */
+function visitorId(): string {
+  const given = env().visitor;
+  if (given) return given;
+  let v = storage.get("fj_vid");
+  if (!v) {
+    v = (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`);
+    storage.set("fj_vid", v);
+  }
+  return v;
+}
+
 function bar(img: string, text: string, href: string, label: string): HTMLElement {
+  const native = env().mode === "app";
   return h(
     "a",
-    { class: "adbar", href: safeUrl(href) || undefined, target: "_blank", rel: "noopener sponsored", "aria-label": "Publicidad" },
+    {
+      class: "adbar",
+      href: safeUrl(href) || undefined,
+      target: "_blank",
+      rel: "noopener sponsored",
+      "aria-label": "Publicidad",
+      // Inside the APK links must go through the native bridge so they open in the system browser.
+      onclick: native ? (e: Event) => { e.preventDefault(); openExternal(href); } : undefined,
+    },
     img ? h("img", { src: img, alt: text || "Publicidad" }) : null,
     text ? h("span", { class: "adtext" }, text) : null,
     h("em", { class: "adlabel" }, label),
@@ -33,8 +54,7 @@ function bar(img: string, text: string, href: string, label: string): HTMLElemen
 }
 
 export function adBar(cfg: AppConfig, rerender: () => void): { el: HTMLElement; pos: "top" | "bottom" } | null {
-  const { mode, apiBase, projectId, visitor } = env();
-  if (mode === "app") return null;
+  const { mode, apiBase, projectId } = env();
   const mine = creatorAd(cfg);
 
   if (mode === "preview") {
@@ -48,7 +68,7 @@ export function adBar(cfg: AppConfig, rerender: () => void): { el: HTMLElement; 
 
   if (!requested) {
     requested = true;
-    const url = `${apiBase}/api/public/apps/${encodeURIComponent(projectId)}/ad${visitor ? `?v=${encodeURIComponent(visitor)}` : ""}`;
+    const url = `${apiBase}/api/public/apps/${encodeURIComponent(projectId)}/ad?v=${encodeURIComponent(visitorId())}${mode === "app" ? "&src=app" : ""}`;
     fetch(url)
       .then((r) => (r.ok ? (r.json() as Promise<Decision>) : Promise.reject(new Error(String(r.status)))))
       .then((d) => { decision = d; })
