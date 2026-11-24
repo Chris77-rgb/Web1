@@ -42,3 +42,10 @@ test("AI blueprint schema converts to a JSON schema for structured outputs", asy
   const fmt = betaZodOutputFormat(z.object({ a: z.enum(["x", "y"]), b: z.array(z.object({ k: z.string() })) }));
   assert.equal(fmt.type, "json_schema");
 });
+
+test("extractJson tolerates code fences and surrounding text from any provider", async () => {
+  const { extractJson } = await import("../src/lib/ai-providers.ts");
+  assert.deepEqual(extractJson('```json\n{"a":1}\n```'), { a: 1 });
+  assert.deepEqual(extractJson('Aquí tienes: {"a":{"b":[1,2]}} gracias'), { a: { b: [1, 2] } });
+  assert.throws(() => extractJson("sin json"));
+});

@@ -50,6 +50,11 @@ model User {
   planCode        String    @default("FREE")
   plan            Plan      @relation(fields: [planCode], references: [code])
   stripeCustomerId String?  @unique
+  /// Optional user-owned AI provider (BYOK). The key is stored encrypted, never returned by the API.
+  aiProvider       String?
+  aiApiKeyEnc      String?
+  aiKeyHint        String?
+  aiModel          String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   lastLoginAt     DateTime?

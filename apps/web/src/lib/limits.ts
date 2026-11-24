@@ -47,6 +47,12 @@ export async function assertStorage(userId: string, planCode: string, incoming: 
     throw new ApiError(402, `Has superado el almacenamiento de tu plan (${plan.maxStorageMb} MB).`);
 }
 
+/** Feature check only: used when the user brings their own AI key (no platform quota applies). */
+export async function assertAiFeature(planCode: string) {
+  const plan = await getPlan(planCode);
+  if (!plan.features.includes("ai_assistant")) throw new ApiError(402, "El asistente de IA no está incluido en tu plan.");
+}
+
 export async function assertAi(userId: string, planCode: string) {
   const [plan, usage] = await Promise.all([getPlan(planCode), getUsage(userId)]);
   if (!plan.features.includes("ai_assistant")) throw new ApiError(402, "El asistente de IA no está incluido en tu plan.");

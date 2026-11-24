@@ -16,6 +16,7 @@ import {
 } from "@forjapp/shared";
 import { env } from "./env";
 import { ApiError } from "./api";
+import { AI_PROVIDERS, completeJson, type AiProvider } from "./ai-providers";
 
 const hex = z.string().describe("Color hexadecimal #RRGGBB");
 const kv = z.object({ key: z.string(), value: z.string() });
@@ -50,6 +51,7 @@ const BlueprintSchema = z.object({
   ),
 });
 type Blueprint = z.infer<typeof BlueprintSchema>;
+const BLUEPRINT_JSON_SCHEMA = JSON.stringify(z.toJSONSchema(BlueprintSchema));
 
 function moduleCatalog(): string {
   const fieldDesc = (f: FieldDef) => `${f.key}:${f.type}${f.options ? `(${f.options.map((o) => o.value).join("|")})` : ""}`;
@@ -169,12 +171,32 @@ function configToBlueprintText(cfg: AppConfig): string {
   });
 }
 
-// ------------------------------------------------------------------ Claude
-export async function generateWithClaude(prompt: string, opts: { name?: string; current?: AppConfig }): Promise<{ config: AppConfig; summary: string }> {
-  const client = new Anthropic({ apiKey: env.anthropicKey() });
-  const userText = opts.current
+function buildUserText(prompt: string, opts: { name?: string; current?: AppConfig }): string {
+  return opts.current
     ? `Esta es mi app actual:\n${configToBlueprintText(opts.current)}\n\nAplica estos cambios y devuelve la app completa (conserva lo que no pida cambiar, incluidas las URLs de imágenes):\n${prompt}`
     : `Crea una app${opts.name ? ` llamada "${opts.name}"` : ""}:\n${prompt}`;
+}
+
+// ------------------------------------------------------------------ user's own AI account (BYOK)
+/** Generates the app with the user's provider and key. Works for Claude, ChatGPT and Gemini. */
+export async function generateWithUserKey(
+  own: { provider: AiProvider; apiKey: string; model: string },
+  prompt: string,
+  opts: { name?: string; current?: AppConfig },
+): Promise<{ config: AppConfig; summary: string }> {
+  const system = `${SYSTEM}\n\nDevuelve SOLO un objeto JSON válido, sin texto antes ni después, que cumpla este JSON Schema:\n${BLUEPRINT_JSON_SCHEMA}`;
+  const raw = await completeJson(own.provider, own.apiKey, own.model, system, buildUserText(prompt, opts));
+  const parsed = BlueprintSchema.safeParse(raw);
+  if (!parsed.success) throw new ApiError(502, "La IA no devolvió una estructura válida. Inténtalo de nuevo.");
+  const bp = parsed.data;
+  if (opts.name) bp.appName = opts.name;
+  return { config: blueprintToConfig(bp, opts.current), summary: bp.summary };
+}
+
+// ------------------------------------------------------------------ Claude (platform key)
+export async function generateWithClaude(prompt: string, opts: { name?: string; current?: AppConfig }): Promise<{ config: AppConfig; summary: string }> {
+  const client = new Anthropic({ apiKey: env.anthropicKey() });
+  const userText = buildUserText(prompt, opts);
 
   let response;
   try {
@@ -263,6 +285,6 @@ export function generateWithRules(prompt: string, opts: { name?: string }): { co
   if (cfg.pages.length > 5) cfg.navigation.type = "drawer";
   cfg.navigation.items = cfg.pages.slice(0, cfg.navigation.type === "drawer" ? 8 : 5).map((p) => ({ id: newId("nav"), label: p.title.slice(0, 30), icon: p.icon, pageId: p.id }));
 
-  const summary = `He partido de la plantilla «${TEMPLATE_MAP[tplId]!.name}»${added.length ? ` y he añadido: ${added.join(", ")}` : ""}.\nPáginas: ${cfg.pages.map((p) => p.title).join(", ")}.\n(Generador básico sin conexión a IA: configura ANTHROPIC_API_KEY para resultados personalizados.)`;
+  const summary = `He partido de la plantilla «${TEMPLATE_MAP[tplId]!.name}»${added.length ? ` y he añadido: ${added.join(", ")}` : ""}.\nPáginas: ${cfg.pages.map((p) => p.title).join(", ")}.\n(Generador básico sin IA: conecta tu IA en Perfil → Inteligencia artificial para resultados personalizados.)`;
   return { config: sanitize(cfg), summary };
 }
