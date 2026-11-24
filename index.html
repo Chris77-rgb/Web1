@@ -57,10 +57,10 @@ button.on{background:var(--n)}
 #end .cr{font-size:8px;line-height:2.4;opacity:.85}
 #end .cr i{font-style:normal;color:#ffd23f}
 #end .fx{position:absolute;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:0;right:0;display:flex;justify-content:center;opacity:0;transition:opacity 1s}
-</style><div id="fd"></div><div id="sel"><div class="t">ELIGE RONDA</div><button data-r="1" style="background:#ff3d81">ROUND 1</button><button data-r="2" style="background:#1d8f9a">ROUND 2</button><button data-r="3" style="background:#c0587a">ROUND 3</button><button data-r="4" style="background:#e0902a">ROUND 4</button><button data-r="5" style="background:#5a4ab8">ROUND 5</button><button data-r="0" style="background:#333">VOLVER</button></div><div id="cb"></div><div id="bn"></div><div id="ttl" class="ov"><div class="lg">CALLES DE PUÑO<b>3D</b></div><div class="tg">DE HIROSAKI AL MONTE FUJI · 5 RONDAS</div><button id="bst">EMPEZAR</button><button id="bsl" style="background:#1d8f9a">ELEGIR RONDA</button><div class="hi" id="thi">RÉCORD 000000</div><div class="hk">← → ↑ ↓ MOVER · DOBLE TOQUE ← → CORRER<br>Z / X GOLPES · 3 GOLPES SEGUIDOS = PATADA FINAL<br>C / V ESQUIVAR (Y GOLPE TRAS ESQUIVAR)<br>ESPACIO o Z+X = ESPECIAL (CUESTA VIDA) · P PAUSA</div></div>
-<div id="pz" class="ov"><h2>PAUSA</h2><button id="bpr">CONTINUAR</button><button id="bpq" style="background:#333">SALIR AL TÍTULO</button></div>
+</style><div id="fd"></div><div id="sel"><div class="t">ELIGE RONDA</div><button data-r="1" style="background:#ff3d81">ROUND 1</button><button data-r="2" style="background:#1d8f9a">ROUND 2</button><button data-r="3" style="background:#c0587a">ROUND 3</button><button data-r="4" style="background:#e0902a">ROUND 4</button><button data-r="5" style="background:#5a4ab8">ROUND 5</button><button data-r="6" style="background:#d8401c">ROUND 6</button><button data-r="0" style="background:#333">VOLVER</button></div><div id="cb"></div><div id="bn"></div><div id="ttl" class="ov"><div class="lg">CALLES DE PUÑO<b>3D</b></div><div class="tg">DE HIROSAKI A LA CIMA DEL FUJI · 6 RONDAS</div><button id="bst">EMPEZAR</button><button id="bsl" style="background:#1d8f9a">ELEGIR RONDA</button><div class="hi" id="thi">RÉCORD 000000</div><div class="hk">← → ↑ ↓ MOVER · DOBLE TOQUE ← → CORRER<br>Z / X GOLPES · 3 GOLPES SEGUIDOS = PATADA FINAL<br>C / V ESQUIVAR (Y GOLPE TRAS ESQUIVAR)<br>ESPACIO o Z+X = ESPECIAL (CUESTA VIDA) · P PAUSA · TECLAS 1-6 ELEGIR RONDA</div></div>
+<div id="pz" class="ov"><h2>PAUSA</h2><button id="bpr">CONTINUAR</button><button id="bps" style="background:#1d8f9a">ELEGIR RONDA</button><button id="bpq" style="background:#333">SALIR AL TÍTULO</button></div>
 <div id="co" class="ov"><h2>¿CONTINUAR?</h2><div class="n" id="con">9</div><button id="bco">CONTINUAR</button><button id="bcq" style="background:#333">TERMINAR</button><small id="cos"></small></div>
-<div id="end" class="ov"><div class="rl" id="erl"><h2>¡VICTORIA!</h2><p>El Oyabun ha caído bajo el Monte Fuji.<br>De las calles de neón a la estación, del castillo de Hirosaki a la autopista y hasta Gotemba: nadie pudo detener tus puños.</p><p style="color:#ffd23f">LAS CALLES VUELVEN A SER TUYAS.</p><div class="st" id="est"></div><div class="cr"><i>CALLES DE PUÑO 3D</i><br><br>ROUND 1 · CALLES DE PUÑO<br>ROUND 2 · ESTACIÓN DIRECCIÓN HIROSAKI<br>ROUND 3 · PARQUE DEL CASTILLO<br>ROUND 4 · AUTOPISTA AL MONTE FUJI<br>ROUND 5 · GOTEMBA DE NOCHE<br><br><i>ENEMIGOS</i><br>RATA · TITO · GUS · BATERO · CADENAS<br>BRUTO · BUNTA · KENJI · RYO · ONI<br>MARTILLO · COLOSO · DEMOLEDOR · OYABUN<br><br><i>GRACIAS POR JUGAR</i></div></div><div class="fx" id="efx"><button id="ben">VOLVER AL TÍTULO</button></div></div>
+<div id="end" class="ov"><div class="rl" id="erl"><h2>¡VICTORIA!</h2><p>El Kaicho ha caído en la cima del Monte Fuji.<br>De las calles de neón a la estación, del castillo de Hirosaki a la autopista, de Gotemba hasta los 3776 metros: nadie pudo detener tus puños.</p><p style="color:#ffd23f">LAS CALLES VUELVEN A SER TUYAS.</p><div class="st" id="est"></div><div class="cr"><i>CALLES DE PUÑO 3D</i><br><br>ROUND 1 · CALLES DE PUÑO<br>ROUND 2 · ESTACIÓN DIRECCIÓN HIROSAKI<br>ROUND 3 · PARQUE DEL CASTILLO<br>ROUND 4 · AUTOPISTA AL MONTE FUJI<br>ROUND 5 · GOTEMBA DE NOCHE<br>ROUND 6 · CIMA DEL MONTE FUJI<br><br><i>ENEMIGOS</i><br>RATA · TITO · GUS · BATERO · CADENAS<br>BRUTO · BUNTA · KENJI · RYO · ONI<br>MARTILLO · COLOSO · DEMOLEDOR · OYABUN<br>KAICHO<br><br><i>GRACIAS POR JUGAR</i></div></div><div class="fx" id="efx"><button id="ben">VOLVER AL TÍTULO</button></div></div>
 <div id="pad"><span></span><button data-k="u">▲</button><span></span><button data-k="l">◀</button><span></span><button data-k="r">▶</button><span></span><button data-k="d">▼</button><span></span></div>
 <div id="act"><button data-a="0" style="left:0;top:7px">LP</button><button data-a="1" style="left:42px;top:0">RP</button><button data-a="2" style="left:7px;top:48px;font-size:12px">«</button><button data-a="3" style="left:49px;top:42px;font-size:12px">»</button><button data-a="4" style="left:-42px;top:24px;width:34px;height:34px;background:#ffd23f;font-size:7px">SP</button></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -355,7 +355,7 @@ function spPose(e,t,al){const c=e.m,sp=c.spr,ix=e.px===undefined?e.x:lp(e.px,e.x
   else if(e.fs){f=e.f>0?18:19;idle=1}
   else if(e.walk){const px0=e.px===undefined?e.x:e.px,pz0=e.pz===undefined?e.z:e.pz;sp.ph=(sp.ph||0)+Math.hypot(e.x-px0,e.z-pz0)*DT;f=[33,32,34,32][((sp.ph/.9)|0)%4];if(f==32)bob=.04}
   else{f=SWAY[((t*.09)|0)%SWAY.length];idle=1}
- }else if(sp.xs){const R=XSP[sp.xk](e,t,sp);f=R[0];if(R[1])tint=R[1];rot=R[2]||0;sx=R[3]||0}else if(sp.mt){
+ }else if(sp.xs){const R=XSP[sp.xk](e,t,sp);f=R[0];if(R[1])tint=R[1];else if(e.tint)tint=e.tint;rot=R[2]||0;sx=R[3]||0}else if(sp.mt){
   const sg=e.f>0?1:-1;
   if(G.state=='over')f=4;
   else if(e.down&&e.hp<=0)f=26+Math.min(8,Math.max(0,((t-(e.dk||0))/7)|0));
@@ -542,7 +542,7 @@ function beginRound3(){const s=G;s.state='trans';s.go=0;const fd=$('fd');fd.styl
 function doRound3(){const s=G,p=s.p;s.es.forEach(e=>{S.remove(e.m.root);(e.m.links||[]).forEach(l=>S.remove(l));e.eb&&e.eb.remove()});s.es=[];s.it.forEach(i=>S.remove(i.m));s.it=[];s.fx.forEach(f=>S.remove(f.m));s.fx=[];buildHirosaki();
  s.round=3;s.zmin=-3.3;s.zmax=4.6;s.ZX=ZX3;s.ZN=ZN3;s.zi=0;s.lock=ZX3[0];s.zoneOn=0;s.left=0;s.sp=0;s.go=1;s.cx=1;s.pcx=1;s.rb=170;s.cleared=0;p.x=1;p.z=0;p.vx=0;p.mx=0;p.mz=0;p.hp=Math.min(p.mh,p.hp+40);p.stun=0;p.air=0;p.y=0;p.sit=0;p.at=0;p.held=0;p.he=null;
  setRoundVisual(3);TR.pass.on=false;TR.hi.on=false;TR.hi.done=false;s.state='play'}
-function setRoundVisual(n){if(R4.cv)R4.cv.style.display=n==4?'block':'none';R.domElement.style.display=R2.domElement.style.display=n==4?'none':'';if(n==4)return;CITY.forEach(o=>o.visible=n==1);if(n==1)S.background=skyTx;else if(n==2)S.background=SUBBG;else if(n==5)S.background=skyTx;else{if(!HR.sky)HR.sky=new T.Color(0x5092fc);S.background=HR.sky}S.fog=n==1?new T.Fog(0x14102b,45,130):null;R.domElement.style.filter=n==1?'blur(2px)':'none';if(SB3.g)SB3.g.visible=n==2;if(HR.g)HR.g.visible=n==3;if(GB.g)GB.g.visible=n==5;cam.far=n==5?720:300;cam.updateProjectionMatrix()}
+function setRoundVisual(n){if(R4.cv)R4.cv.style.display=n==4?'block':'none';R.domElement.style.display=R2.domElement.style.display=n==4?'none':'';if(n==4)return;CITY.forEach(o=>o.visible=n==1);if(n==1)S.background=skyTx;else if(n==2)S.background=SUBBG;else if(n==5)S.background=skyTx;else if(n==6)S.background=R6.sky||skyTx;else{if(!HR.sky)HR.sky=new T.Color(0x5092fc);S.background=HR.sky}S.fog=n==1?new T.Fog(0x14102b,45,130):null;R.domElement.style.filter=n==1?'blur(2px)':'none';if(SB3.g)SB3.g.visible=n==2;if(HR.g)HR.g.visible=n==3;if(GB.g)GB.g.visible=n==5;if(R6.g)R6.g.visible=n==6;dl.color.setHex(n==6?0xffd0a8:0xffffff);cam.far=n>=5?720:300;cam.updateProjectionMatrix()}
 function buildStation(){if(SB.g||!SB.tx)return;const g=new T.Group(),mk=(w,h,map,ro,tr)=>{const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map,transparent:!!tr,alphaTest:tr?.02:0,depthTest:false,depthWrite:false,fog:false}));m.renderOrder=ro;m.frustumCulled=false;g.add(m);return m};
  SB.m.st=mk(1983,793,SB.tx,-30,0);if(SB.tn){SB.m.tn=mk(SB.tw,SB.th2,SB.tn,-29,1);SB.m.th=mk(SB.tw,SB.th2,SB.th,-29,1)}
  for(const [k,x0,y0,x1,y1] of [['pl',0,150,430,520],['pr',1590,150,1983,520]]){const m=mk(x1-x0,y1-y0,SB.tx,-28,1),uv=m.geometry.attributes.uv,u0=x0/1983,u1=x1/1983,v1=1-y0/793,v0=1-y1/793;uv.array.set([u0,v1,u1,v1,u0,v0,u1,v0]);uv.needsUpdate=true;m.userData.r=[x0,y0,x1,y1];SB.m[k]=m}
@@ -595,7 +595,7 @@ function strike(){const p=G.p;let n=0;const L=p.ai==3||p.ai==9||p.ai==12;
  for(const e of G.es){if(e.air||e.down)continue;const dx=(e.x-p.x)*p.f,dz=Math.abs(e.z-p.z);
   if(dx>(p.ai==12?-1.5:-.3)&&dx<p.a.r+(e.big?.5:.2)&&dz<.9){hurt(e,p.a.dmg*(L?1.5:1),L,p.f);if(p.ai==12&&e.big)e.x+=p.f*.5;n++}}
  if(n){G.combo+=n;G.cT=100;if(L){p.step=0;p.seq="";p.ct=0}G.hs=L?8:4;G.shake=L?.4:.2;hitSnd(L);if(p.ai==12){p.rc=14;p.vx=-p.f*.05;G.hs=9;G.shake=.65;slamSnd()}}}
-function spawn(){const R2=G.round>=2,B2=G.round==2&&G.zi==3,B3=(G.round==3||G.round==5)&&G.zi==3&&!!XS.kz.T,bz=G.zi==3,hv=!bz&&G.zi>=1&&G.left%3==0,bi=G.left==2?0:1,side=B2?-1:B3?1:bz?(bi?1:-1):(Math.random()<.5?-1:1),xk=R2&&!hv?((G.round==3||G.round==5)&&XS.yak.T?(()=>{const o=['yak'];if(XS.ypt.T)o.push('ypt');if(XS.brd.T)o.push('brd');return o[Math.random()*o.length|0]})():(Math.random()<.5?'bat':'chn')):(hv&&(G.round==3||G.round==5)&&XS.fat.T?'fat':null),jk=!R2&&!bz&&!hv&&G.left==G.ZN[G.zi]-1;
+function spawn(){if(G.round==6){spawn6();return}const R2=G.round>=2,B2=G.round==2&&G.zi==3,B3=(G.round==3||G.round==5)&&G.zi==3&&!!XS.kz.T,bz=G.zi==3,hv=!bz&&G.zi>=1&&G.left%3==0,bi=G.left==2?0:1,side=B2?-1:B3?1:bz?(bi?1:-1):(Math.random()<.5?-1:1),xk=R2&&!hv?((G.round==3||G.round==5)&&XS.yak.T?(()=>{const o=['yak'];if(XS.ypt.T)o.push('ypt');if(XS.brd.T)o.push('brd');return o[Math.random()*o.length|0]})():(Math.random()<.5?'bat':'chn')):(hv&&(G.round==3||G.round==5)&&XS.fat.T?'fat':null),jk=!R2&&!bz&&!hv&&G.left==G.ZN[G.zi]-1;
  const BL=[{skin:0xc98a5a,cloth:0xb02020,pants:0x5a0e0e},{skin:0x8a5a3a,cloth:0x2060c0,pants:0x10307a}];
  const lk=B3?{xs:'kz',spr:1,big:1,wp:''}:B2&&XS.bs.T?{xs:'bs',spr:1,big:1,wp:''}:bz?Object.assign({s:1.2,wd:1.15,mus:1,glove:0xdddddd,big:1,w:.1},BL[bi],bi&&BT?{spr:1,sb:1}:(!bi&&BTM?{spr:1,mt:1}:{})):hv?(xk=='fat'?{xs:'fat',spr:1,big:1,hv:1,wp:''}:{s:1.2,wd:1.2,mus:1,skin:0xb98a6a,pants:0x333340,glove:0x222222,big:1,spr:1,hv:1}):(xk&&XS[xk].T?{xs:xk,spr:1,wp:xk=='bat'?'stick':xk=='chn'?'chain':''}:gangLook());
  const e=mkE({x:G.cx+side*(HW+1.5),z:G.zmin+.4+Math.random()*(G.zmax-G.zmin-.8),hp:B3?300:B2?240:bz?170:hv?(xk=='fat'?90:80):xk=='yak'||xk=='ypt'?70:xk=='brd'?75:xk?60:50,boss:bz,sb:bz&&!B2&&!B3&&bi&&BT?1:0,mt:bz&&!B2&&!B3&&!bi&&BTM?1:0,kz:B3?1:0,vr:0,hv:hv?1:0,big:bz||hv?1:0,f:-side},lk);
@@ -618,7 +618,7 @@ function upd(){const s=G;s.shake*=.86;if(s.qk>0){s.qk--;s.shake=Math.max(s.shake
  p.x=Math.max(Math.max(0,s.cx-HW+.8),Math.min(s.lock,p.x));p.z=Math.max(s.zmin,Math.min(s.zmax,p.z));
  if(!s.zoneOn&&p.x>=s.lock-.3){s.zoneOn=1;s.left=s.ZN[s.zi];s.sp=30;s.go=0}
  if(s.zoneOn){if(s.left>0){if(--s.sp<=0&&s.es.length<3){spawn();s.left--;s.sp=60}}
-  else if(!s.es.length){s.zoneOn=0;s.zi++;if(s.zi>=s.ZX.length){roundClear(s.round==1?beginRound2:s.round==2?beginHirosaki:s.round==3?beginRound4:showEnding)}else{s.lock=s.ZX[s.zi];s.go=1}}}
+  else if(!s.es.length){s.zoneOn=0;s.zi++;if(s.zi>=s.ZX.length){roundClear(s.round==1?beginRound2:s.round==2?beginHirosaki:s.round==3?beginRound4:s.round==5?beginRound6:showEnding)}else{s.lock=s.ZX[s.zi];s.go=1}}}
  for(const e of s.es){
   if(p.he===e&&(e.stun>0||e.air||e.down)){p.held=0;p.he=null;p.air=1;p.vy=.1;p.vx=-e.f*.05}
   if(e.air){e.x+=e.vx;e.y+=e.vy;e.vy-=.012;if(e.y<=0){e.y=0;e.air=0;e.down=e.kz?100:45}}
@@ -828,6 +828,99 @@ function beginRound5(){const s=G;s.state='trans';s.go=0;const fd=$('fd');fd.styl
 function doRound5(){const s=G,p=s.p;s.es.forEach(e=>{S.remove(e.m.root);(e.m.links||[]).forEach(l=>S.remove(l));e.eb&&e.eb.remove()});s.es=[];s.it.forEach(i=>S.remove(i.m));s.it=[];s.fx.forEach(f=>S.remove(f.m));s.fx=[];buildGotemba();
  s.round=5;s.zmin=-3.3;s.zmax=4.6;s.ZX=ZX5;s.ZN=ZN5;s.zi=0;s.lock=ZX5[0];s.zoneOn=0;s.left=0;s.sp=0;s.go=1;s.cx=1;s.pcx=1;s.rb=170;s.cleared=0;s.tgt=null;p.x=1;p.z=0;p.vx=0;p.mx=0;p.mz=0;p.hp=Math.min(p.mh,Math.max(p.hp,0)+40);p.inv=0;p.stun=0;p.air=0;p.y=0;p.sit=0;p.at=0;p.held=0;p.he=null;
  setRoundVisual(5);s.state='play'}
+
+// ===================== ROUND 6: CIMA DEL MONTE FUJI (AMANECER) =====================
+const R6={g:null,sky:null,pp:null,pt:null,mist:[],ct:null,gust:0,wT:600},ZX6=[14,28,42,56],ZN6=[5,6,7,2];
+function buildSummit(){if(R6.g)return;const g=new T.Group(),X0=-45,X1=115,XW=X1-X0,XC=(X0+X1)/2,rnd=Math.random;
+ const add=(m,x,y,z)=>{m.position.set(x,y,z);g.add(m);return m},box=(w,h,d,mat,x,y,z)=>add(new T.Mesh(new T.BoxGeometry(w,h,d),mat),x,y,z),
+  L=(c,e)=>new T.MeshLambertMaterial({color:c,emissive:e||0}),Bm=c=>new T.MeshBasicMaterial({color:c}),
+  cvT=(w,h,fn)=>{const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.anisotropy=8;return t},
+  JP='"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP","Noto Sans JP",serif';
+ // ---- dawn sky (background)
+ R6.sky=cvT(512,512,(x,w,h)=>{const gr=x.createLinearGradient(0,0,0,h);[[0,'#0a0c2c'],[.28,'#2a2262'],[.5,'#7a3c7c'],[.66,'#e8744c'],[.8,'#ffbf6a'],[1,'#ffe6b4']].forEach(([a,c])=>gr.addColorStop(a,c));x.fillStyle=gr;x.fillRect(0,0,w,h);
+  for(let i=0;i<120;i++){const y=rnd()*h*.42;x.fillStyle='rgba(255,255,255,'+((.3+rnd()*.7)*(1-y/(h*.42))).toFixed(2)+')';x.fillRect(rnd()*w,y,1.5,1.5)}
+  for(let i=0;i<8;i++){x.fillStyle='rgba(255,170,140,.18)';x.beginPath();x.ellipse(rnd()*w,h*(.55+rnd()*.15),60+rnd()*90,4+rnd()*5,0,0,6.3);x.fill()}});
+ // ---- volcanic gravel path with snow patches
+ const grav=tex(256,256,(x,w,h)=>{x.fillStyle='#4a3432';x.fillRect(0,0,w,h);for(let i=0;i<3200;i++){const v=rnd();x.fillStyle=v<.5?'rgba(30,18,18,.5)':v<.85?'rgba(120,80,70,.45)':'rgba(240,244,255,.55)';x.fillRect(rnd()*w,rnd()*h,1+rnd()*3,1+rnd()*3)}},(XW+200)/7,40/7);
+ add(new T.Mesh(new T.PlaneGeometry(XW+200,40),new T.MeshLambertMaterial({map:grav,color:0xe0d0d0})),XC,0,14.6).rotation.x=-Math.PI/2;
+ const snowM=L(0xf2f5ff,0x2a3040);
+ for(let i=0;i<46;i++){const m=new T.Mesh(new T.CircleGeometry(1,14),snowM);m.rotation.x=-Math.PI/2;m.scale.set(.6+rnd()*2.2,.3+rnd()*.9,1);add(m,X0+rnd()*XW,.015+i*.0004,-5+rnd()*12)}
+ // ---- rocky terrace behind the trail
+ const rockT=tex(256,256,(x,w,h)=>{x.fillStyle='#3a2a2c';x.fillRect(0,0,w,h);for(let i=0;i<2600;i++){const v=rnd();x.fillStyle=v<.6?'rgba(20,12,14,.5)':v<.9?'rgba(110,70,64,.4)':'rgba(235,240,255,.7)';x.fillRect(rnd()*w,rnd()*h,2+rnd()*4,2+rnd()*3)}},(XW+200)/9,30/9);
+ const rD=L(0x2a1e20);box(XW+200,.5,30,[rD,rD,new T.MeshLambertMaterial({map:rockT,color:0xd0c4c4}),rD,rD,rD],XC,0,-21);
+ // ---- shimenawa rope fence with shide papers
+ const woodM=L(0x5a3a26),ropeM=L(0xd8c48a,0x2a2010),shideM=new T.MeshBasicMaterial({color:0xffffff,side:2}),posts=[];
+ for(let X=X0;X<X1+4;X+=3.2){add(new T.Mesh(new T.CylinderGeometry(.08,.1,1.3,6),woodM),X,.65,-5.7);posts.push(X)}
+ for(let i=0;i+1<posts.length;i++){const a=posts[i],b=posts[i+1],cv=new T.QuadraticBezierCurve3(new T.Vector3(a,1.15,-5.7),new T.Vector3((a+b)/2,.75,-5.7),new T.Vector3(b,1.15,-5.7));g.add(new T.Mesh(new T.TubeGeometry(cv,8,.045,5,false),ropeM));
+  if(i%2==0)add(new T.Mesh(new T.PlaneGeometry(.16,.42),shideM),(a+b)/2,.62,-5.65).rotation.z=.15}
+ // ---- summit signpost (富士山頂 3776m)
+ const sgT=cvT(64,320,(x,w,h)=>{x.fillStyle='#c8a878';x.fillRect(0,0,w,h);for(let i=0;i<14;i++){x.fillStyle='rgba(90,60,30,.25)';x.fillRect(rnd()*w,0,2,h)}x.fillStyle='#1a1008';x.font='bold 40px '+JP;x.textAlign='center';['富','士','山','頂'].forEach((c,i)=>x.fillText(c,w/2,52+i*46));x.font='bold 17px monospace';x.fillText('3776m',w/2,h-22)});
+ add(new T.Mesh(new T.BoxGeometry(.5,2.6,.12),[woodM,woodM,woodM,woodM,new T.MeshLambertMaterial({map:sgT}),woodM]),1.6,1.5,-5.2);
+ // ---- torii gates
+ const ver=L(0xd8401c,0x300800),blk=L(0x1a1214),
+  plq=cvT(64,96,(x,w,h)=>{x.fillStyle='#14100c';x.fillRect(0,0,w,h);x.strokeStyle='#d8b050';x.lineWidth=4;x.strokeRect(4,4,w-8,h-8);x.fillStyle='#e8c060';x.font='bold 24px '+JP;x.textAlign='center';['富','士','山'].forEach((c,i)=>x.fillText(c,w/2,30+i*25))});
+ const torii=(X,Z,s)=>{for(const dx of[-2.6,2.6]){add(new T.Mesh(new T.CylinderGeometry(.26*s,.3*s,6.4*s,12),ver),X+dx*s,.25+3.2*s,Z);box(.8*s,.4*s,.8*s,blk,X+dx*s,.25+.2*s,Z)}
+  box(7.2*s,.36*s,.4*s,ver,X,.25+4.7*s,Z);box(8.6*s,.42*s,.6*s,blk,X,.25+6.3*s,Z);box(8*s,.3*s,.5*s,ver,X,.25+5.95*s,Z);box(8.8*s,.1*s,.66*s,snowM,X,.25+6.56*s,Z);
+  for(const sg of[-1,1])box(1*s,.42*s,.6*s,blk,X+sg*4.6*s,.25+6.45*s,Z).rotation.z=sg*.22;
+  box(.3*s,1.2*s,.3*s,ver,X,.25+5.3*s,Z);add(new T.Mesh(new T.PlaneGeometry(.7*s,1.05*s),new T.MeshBasicMaterial({map:plq})),X,.25+5.3*s,Z+.18*s)};
+ torii(6,-9,1);torii(40,-9.5,1);torii(80,-12,1.15);
+ // ---- stone lanterns (tōrō)
+ const stone=L(0x8a8490),stoneD=L(0x6a6470),lightM=Bm(0xffd49a);
+ const toro=(X,Z)=>{box(1,.3,1,stoneD,X,.4,Z);add(new T.Mesh(new T.CylinderGeometry(.18,.24,1.2,8),stone),X,1.15,Z);box(.9,.18,.9,stoneD,X,1.82,Z);box(.62,.56,.62,stone,X,2.2,Z);box(.66,.36,.42,lightM,X,2.2,Z);
+  add(new T.Mesh(new T.ConeGeometry(.78,.55,4),stoneD),X,2.75,Z).rotation.y=Math.PI/4;add(new T.Mesh(new T.ConeGeometry(.5,.22,4),snowM),X,2.95,Z).rotation.y=Math.PI/4;add(new T.Mesh(new T.SphereGeometry(.13,8,6),stone),X,3.1,Z);
+  const sp=new T.Sprite(new T.SpriteMaterial({map:halo,color:0xffb070,blending:T.AdditiveBlending,depthWrite:false,transparent:true}));sp.scale.set(2.2,2.2,1);sp.position.set(X,2.2,Z+.3);g.add(sp)};
+ for(let X=X0+4;X<X1;X+=13)toro(X,-6.8);
+ // ---- lava rocks with snow caps
+ const lava=L(0x2e2224),lava2=L(0x463236);
+ for(let i=0;i<70;i++){const r=.4+rnd()*1.4,X=X0+rnd()*XW,Z=-8-rnd()*24;const m=add(new T.Mesh(new T.DodecahedronGeometry(r,0),rnd()<.5?lava:lava2),X,.25+r*.3,Z);m.rotation.set(rnd()*3,rnd()*3,rnd()*3);m.scale.y=.6+rnd()*.4;
+  if(rnd()<.6){const c=add(new T.Mesh(new T.SphereGeometry(r*.75,8,5,0,6.3,0,1.3),snowM),X,.25+r*.62,Z);c.scale.y=.45}}
+ // ---- Okumiya shrine at the summit
+ {const X=60,Z=-17,wall=L(0xf0ead8),roof=L(0x3e6e62,0x0a1a16),ped=L(0x8a8490);
+  box(12,.8,8,ped,X,.65,Z);box(4,.4,1.6,ped,X,.45,Z+4.6);box(10,3.4,6,wall,X,2.75,Z);
+  for(const dx of[-4.8,-1.6,1.6,4.8])add(new T.Mesh(new T.CylinderGeometry(.22,.22,3.6,10),ver),X+dx,2.85,Z+3.1);
+  box(10.6,.35,.4,ver,X,4.6,Z+3.1);box(3,2.6,.1,L(0x6a3a20),X,2.4,Z+3.02);
+  const tw=new T.TubeGeometry(new T.QuadraticBezierCurve3(new T.Vector3(X-2.4,4.3,Z+3.35),new T.Vector3(X,3.8,Z+3.6),new T.Vector3(X+2.4,4.3,Z+3.35)),12,.12,6,false);g.add(new T.Mesh(tw,ropeM));
+  for(const sg of[-1,1]){box(13,.35,5.4,roof,X,5.9,Z+sg*2.2).rotation.x=sg*.48;box(12.6,.08,4.4,snowM,X,6.12,Z+sg*2.05).rotation.x=sg*.48}
+  box(13.2,.5,.5,blk,X,7.05,Z);for(const sg of[-1,1])box(.3,.9,.3,blk,X+sg*6.3,7.3,Z).rotation.z=sg*.5;
+  box(1.6,.8,.8,L(0x6a4024),X,1.45,Z+3.9);
+  const nb=(t,c)=>cvT(48,192,(x,w,h)=>{x.fillStyle=c;x.fillRect(0,0,w,h);x.fillStyle='#fff';x.fillRect(0,0,w,14);x.fillStyle=c=='#ffffff'?'#c0201a':'#fff';x.font='bold 30px '+JP;x.textAlign='center';[...t].forEach((ch,i)=>x.fillText(ch,w/2,56+i*40))});
+  [[-7.2,'奉納','#c0201a'],[-8.6,'富士','#ffffff'],[7.2,'浅間','#c0201a'],[8.6,'奉納','#ffffff']].forEach(([dx,t,c])=>{add(new T.Mesh(new T.CylinderGeometry(.05,.05,4.4,6),woodM),X+dx,2.45,Z+4.4);add(new T.Mesh(new T.PlaneGeometry(.6,2.6),new T.MeshLambertMaterial({map:nb(t,c),side:2})),X+dx+.36,2.9,Z+4.4)});
+  toro(X-4,Z+5.4);toro(X+4,Z+5.4)}
+ // ---- crater rim peaks
+ const rimM=L(0x3a2830,0x0a0408),rimS=L(0xf0f2ff,0x303848);
+ for(let X=-120;X<240;X+=8+rnd()*14){if(X>24&&X<66&&rnd()<.7)continue;const h=8+rnd()*16,r=6+rnd()*10,z=-44-rnd()*24,ry=rnd()*3;add(new T.Mesh(new T.ConeGeometry(r,h,7),rimM),X,h/2-1,z).rotation.y=ry;add(new T.Mesh(new T.ConeGeometry(r*.38,h*.38,7),rimS),X,h-1-h*.19+.05,z).rotation.y=ry}
+ // ---- sea of clouds and the rising sun
+ const cloudT=cvT(512,512,(x,w,h)=>{x.fillStyle='#c898ac';x.fillRect(0,0,w,h);for(let i=0;i<300;i++){const cx=rnd()*w,cy=rnd()*h,r=10+rnd()*40,gr=x.createRadialGradient(cx,cy,0,cx,cy,r);gr.addColorStop(0,'rgba(255,236,224,.7)');gr.addColorStop(1,'rgba(255,236,224,0)');x.fillStyle=gr;x.fillRect(cx-r,cy-r,2*r,2*r)}});
+ cloudT.wrapS=cloudT.wrapT=T.RepeatWrapping;cloudT.repeat.set(8,4);R6.ct=cloudT;
+ add(new T.Mesh(new T.PlaneGeometry(2400,900),new T.MeshBasicMaterial({map:cloudT,fog:false})),50,-18,-500).rotation.x=-Math.PI/2;
+ add(new T.Mesh(new T.CircleGeometry(16,40),new T.MeshBasicMaterial({color:0xfff0c0,fog:false})),46,7,-560);
+ const sg2=new T.Sprite(new T.SpriteMaterial({map:halo,color:0xffa860,blending:T.AdditiveBlending,depthWrite:false,transparent:true,fog:false}));sg2.scale.set(190,190,1);sg2.position.set(46,7,-555);g.add(sg2);
+ // ---- drifting mist + blowing snow (follow the camera)
+ R6.mist=[];for(let i=0;i<9;i++){const sp=new T.Sprite(new T.SpriteMaterial({map:smk,transparent:true,depthWrite:false,opacity:.35,color:0xffe0e8}));sp.scale.set(9,3,1);sp.userData.ox=rnd()*60-30;sp.position.set(0,.8+rnd()*2.2,-8-rnd()*12);g.add(sp);R6.mist.push(sp)}
+ const N=520,pos=new Float32Array(N*3),pg=new T.BufferGeometry();for(let i=0;i<N;i++){pos[i*3]=(rnd()-.5)*60;pos[i*3+1]=rnd()*12;pos[i*3+2]=-14+rnd()*24}
+ pg.setAttribute('position',new T.BufferAttribute(pos,3));R6.pp=pos;R6.pt=new T.Points(pg,new T.PointsMaterial({color:0xffffff,size:.13,transparent:true,opacity:.85,depthWrite:false,sizeAttenuation:true}));R6.pt.frustumCulled=false;g.add(R6.pt);
+ g.visible=false;S.add(g);R6.g=g}
+function updSummit(cxi){const g=R6.g;if(!g||!g.visible)return;
+ {const th=Math.tan(cam.fov*Math.PI/360),d=TV.set(0,(1-2*.94)*th,-1).applyQuaternion(cam.quaternion).normalize();if(d.y<-.01&&G){const t=-cam.position.y/d.y,zh=cam.position.z+t*d.z;G.zmax=Math.max(3.2,Math.min(7.5,zh))}}
+ const gu=R6.gust>0&&G&&G.state=='play'?1:0,P=R6.pp;
+ for(let i=0;i<P.length/3;i++){P[i*3+1]-=(.025+(i%4)*.008)*DT;P[i*3]-=(.012+gu*.2)*DT;if(P[i*3+1]<0)P[i*3+1]+=12;if(P[i*3]<-30)P[i*3]+=60}
+ R6.pt.geometry.attributes.position.needsUpdate=true;R6.pt.position.x=cxi;
+ for(const sp of R6.mist){sp.userData.ox-=(.012+gu*.14)*DT;if(sp.userData.ox<-30)sp.userData.ox+=60;sp.position.x=cxi+sp.userData.ox}
+ if(R6.ct)R6.ct.offset.x=(R6.ct.offset.x+.00008*DT)%1}
+function beginRound6(){const s=G;s.state='trans';s.go=0;const fd=$('fd');fd.style.opacity=1;setTimeout(()=>{if(G!==s)return;doRound6();fd.style.opacity=0},2100)}
+function doRound6(){const s=G,p=s.p;s.es.forEach(e=>{S.remove(e.m.root);(e.m.links||[]).forEach(l=>S.remove(l));e.eb&&e.eb.remove()});s.es=[];s.it.forEach(i=>S.remove(i.m));s.it=[];s.fx.forEach(f=>S.remove(f.m));s.fx=[];buildSummit();
+ s.round=6;s.zmin=-3.3;s.zmax=4.6;s.ZX=ZX6;s.ZN=ZN6;s.zi=0;s.lock=ZX6[0];s.zoneOn=0;s.left=0;s.sp=0;s.go=1;s.cx=1;s.pcx=1;s.rb=170;s.cleared=0;s.tgt=null;p.x=1;p.z=0;p.vx=0;p.mx=0;p.mz=0;p.hp=Math.min(p.mh,Math.max(p.hp,0)+40);p.inv=0;p.stun=0;p.air=0;p.y=0;p.sit=0;p.at=0;p.held=0;p.he=null;
+ R6.gust=0;R6.wT=480;setRoundVisual(6);s.state='play'}
+function spawn6(){const zi=G.zi,bz=zi==3,R=a=>a[Math.random()*a.length|0];let lk,o,name;
+ if(bz&&G.left>=2){lk=XS.kz.T?{xs:'kz',spr:1,big:1,wp:''}:Object.assign({s:1.25,wd:1.2,mus:1,glove:0x7a3aa8,big:1,w:.1},{skin:0xc98a5a,cloth:0x3a1a5a,pants:0x1a0e2a});o={hp:420,boss:1,big:1,kz:XS.kz.T?1:0};name='KAICHO'}
+ else if(bz){lk=XS.bs.T?{xs:'bs',spr:1,big:1,wp:''}:Object.assign({s:1.2,wd:1.15,mus:1,glove:0xdddddd,big:1,w:.1},{skin:0x8a5a3a,cloth:0x2060c0,pants:0x10307a});o={hp:240,boss:1,big:1};name='DEMOLEDOR'}
+ else if(zi>=1&&G.left%3==0&&XS.fat.T){lk={xs:'fat',spr:1,big:1,hv:1,wp:''};o={hp:100,hv:1,big:1};name='BUNTA'}
+ else{const ks=['yak','ypt','bat','chn'].filter(k=>XS[k].T);if(ks.length){const k=R(ks);lk={xs:k,spr:1,wp:k=='bat'?'stick':k=='chn'?'chain':''};o={hp:k=='yak'||k=='ypt'?80:70};name=k=='bat'?'BATERO':k=='chn'?'CADENAS':k=='ypt'?R(['RYO','SHIN','DAIGO','HIDE']):R(['KENJI','TETSU','GORO','RYUJI'])}
+  else{lk=gangLook();o={hp:60};name=R(['RATA','TITO','GUS','NACHO','LOBO','CUERVO'])}}
+ const side=bz?(name=='KAICHO'?1:-1):(Math.random()<.5?-1:1),e=mkE(Object.assign({x:G.cx+side*(HW+1.5),z:G.zmin+.4+Math.random()*(G.zmax-G.zmin-.8),vr:0,f:-side,sb:0,mt:0},o),lk);
+ e.wp=lk.wp;e.name=name;if(name=='KAICHO'&&e.m.spr){e.tint=0xc8b4ff;e.m.root.scale.setScalar(1.12)}
+ e.eb=document.createElement('div');e.eb.className='eb';e.eb.innerHTML='<i></i>';document.body.appendChild(e.eb);if(e.big)e.eb.style.width='calc(64px*var(--u))';
+ G.es.push(e);if(e.big)snd(45,.4)}
 // ===================== ROUND 4: AUTOPISTA HIROSAKI -> MONTE FUJI =====================
 const R4={cv:null,x:null,img:null,rc:window.R4RECT||{},L:null,road:null,s:null};
 const R4N=['HIROSAKI · AOMORI','MORIOKA · IWATE','SENDAI · MIYAGI','FUKUSHIMA · TOCHIGI','TOKIO','GOTEMBA · MONTE FUJI'],
@@ -982,16 +1075,16 @@ function r4Draw(){const q=R4.s,c=R4.cv,s=G,p=s.p;let X=R4.x;if(!q||!c||!X)return
 
 const $=id=>document.getElementById(id);
 function draw(al){const s=G,p=s.p;if(s.hs>0)al=1;[p,...s.es].forEach(e=>pose(e,s.t+al,al));const cxi=lp(s.pcx,s.cx,al);
- const shx=(Math.random()-.5)*s.shake,shy=(Math.random()-.5)*s.shake,st=s.round>=3;const r5=s.round==5?1:0;cam.position.set(cxi+(st?0:shx),5.2+(st?0:shy)+r5*.6,CD);cam.lookAt(cxi,2+r5*2.1,0);updStation3D(cxi);updHirosaki(cxi);updGotemba(cxi);cam2.position.copy(cam.position);if(st){cam2.position.x+=shx*.6;cam2.position.y+=shy*.6}cam2.quaternion.copy(cam.quaternion);R.render(S,cam);const bgd=S.background;S.background=null;R2.render(S,cam2);S.background=bgd;
+ const shx=(Math.random()-.5)*s.shake,shy=(Math.random()-.5)*s.shake,st=s.round>=3;const r5=s.round>=5?1:0;cam.position.set(cxi+(st?0:shx),5.2+(st?0:shy)+r5*.6,CD);cam.lookAt(cxi,2+r5*2.1,0);updStation3D(cxi);updHirosaki(cxi);updGotemba(cxi);updSummit(cxi);cam2.position.copy(cam.position);if(st){cam2.position.x+=shx*.6;cam2.position.y+=shy*.6}cam2.quaternion.copy(cam.quaternion);R.render(S,cam);const bgd=S.background;S.background=null;R2.render(S,cam2);S.background=bgd;
  for(const q of NEON){q[2]=q[2]>0?q[2]-1:(Math.random()<.004?8:0);q[0].color.setHex(q[2]>0&&q[2]%2?0x222233:q[1])}
  for(const q of STM){const f=((s.t*.015+q[1])%3)/3;q[0].position.y=.5+f*3;q[0].scale.setScalar(1.2+f*2);q[0].material.opacity=.55*(1-f)}
  for(const e of s.es){if(!e.eb)continue;PV.set(e.ix,e.iy+(e.boss?4.5:e.big?4.4:3.6),e.iz).project(cam);e.eb.firstChild.style.width=Math.max(0,e.hp/e.mh*100)+'%';e.eb.style.transform='translate('+((PV.x*.5+.5)*innerWidth-(e.big?32:22)*UU)+'px,'+((-PV.y*.5+.5)*innerHeight)+'px)';e.eb.style.display=e.hp<=0?'none':'block'}
  $('hp').style.width=Math.max(0,p.hp/p.mh*100)+'%';$('sc').textContent=String(s.score).padStart(6,'0');$('lv').textContent='x'+s.lives;
  const bs=s.es.filter(e=>e.boss),tg=bs.length?null:(s.tgt&&s.tgt.hp>0&&s.es.includes(s.tgt)?s.tgt:null);$('tg').style.visibility=bs.length||tg?'visible':'hidden';
  if(bs.length){$('tn').textContent=bs.length==1?bs[0].name:'JEFES';$('th').style.width=Math.max(0,Math.min(100,bs.reduce((a,e)=>a+e.hp,0)/bs.reduce((a,e)=>a+e.mh,0)*100))+'%'}else if(tg){$('tn').textContent=tg.name;$('th').style.width=Math.max(0,tg.hp/tg.mh*100)+'%'}
- $('cb').innerHTML=(s.up>0?'<div style="color:#7cff3f">1UP!</div>':'')+(s.combo>1?s.combo+' GOLPES':'')+(p.sk?'<small style="display:block;font-size:8px;color:#59FFFD">'+(p.sk=='F'?'FLICKER':'PEEKABOO')+'</small>':'');
+ $('cb').innerHTML=(s.up>0?'<div style="color:#7cff3f">1UP!</div>':'')+(s.round==6&&R6.gust>0&&s.state=='play'?'<div style="color:#bfe8ff">¡VIENTO!</div>':'')+(s.combo>1?s.combo+' GOLPES':'')+(p.sk?'<small style="display:block;font-size:8px;color:#59FFFD">'+(p.sk=='F'?'FLICKER':'PEEKABOO')+'</small>':'');
  const bn=$('bn');bn.className='';
- if(s.rb>0&&s.state=='play')bn.innerHTML='ROUND '+s.round+'<small>'+(s.round==1?'CALLES DE PUÑO':s.round==2?'ESTACIÓN · DIRECCIÓN HIROSAKI':s.round==5?'GOTEMBA · NOCHE BAJO EL FUJI':'HIROSAKI · PARQUE DEL CASTILLO')+'</small>';else if(s.clr&&(s.state=='clear'||s.state=='trans'))bn.innerHTML=s.clr;else if(s.state=='arrive')bn.innerHTML='SE ACERCA EL TREN<small>DIRECCIÓN HIROSAKI</small>';else if(s.state=='win'){bn.innerHTML='¡GANASTE!'}
+ if(s.rb>0&&s.state=='play')bn.innerHTML='ROUND '+s.round+'<small>'+(s.round==1?'CALLES DE PUÑO':s.round==2?'ESTACIÓN · DIRECCIÓN HIROSAKI':s.round==5?'GOTEMBA · NOCHE BAJO EL FUJI':s.round==6?'MONTE FUJI · AMANECER EN LA CIMA':'HIROSAKI · PARQUE DEL CASTILLO')+'</small>';else if(s.clr&&(s.state=='clear'||s.state=='trans'))bn.innerHTML=s.clr;else if(s.state=='arrive')bn.innerHTML='SE ACERCA EL TREN<small>DIRECCIÓN HIROSAKI</small>';else if(s.state=='win'){bn.innerHTML='¡GANASTE!'}
  else if(s.state=='over'){bn.innerHTML='DERROTA'}
  else if(s.go&&!s.zoneOn){bn.innerHTML='GO ▶';bn.className='go'}
  else bn.innerHTML=''}
@@ -1005,7 +1098,7 @@ const KM={ArrowLeft:'l',ArrowRight:'r',ArrowUp:'u',ArrowDown:'d'},AM={KeyU:0,Key
 const KT={};addEventListener('keydown',e=>{if(KM[e.code]){const kk=KM[e.code];inp[kk]=1;if((kk=='l'||kk=='r')&&!e.repeat){const n=performance.now(),d=kk=='r'?1:-1;if(KT[kk]&&n-KT[kk]<260)inp.rn=d;KT[kk]=n}}if(e.code in AM&&!e.repeat)press(AM[e.code])});
 addEventListener('keyup',e=>{if(KM[e.code]){const kk=KM[e.code];inp[kk]=0;if(inp.rn==(kk=='r'?1:kk=='l'?-1:0))inp.rn=0}});
 addEventListener('pointerdown',ac);addEventListener('keydown',ac);$('mu').addEventListener('pointerdown',e=>{e.stopPropagation();ac();MUS=!MUS;$('mu').style.opacity=MUS?1:.4});
-document.querySelectorAll('#sel button').forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();$('sel').style.display='none';if(b.dataset.r=='0'){showTitle();return}reset();ac();if(b.dataset.r=='2')doRound2();else if(b.dataset.r=='3')doRound3();else if(b.dataset.r=='4')doRound4();else if(b.dataset.r=='5')doRound5()}));
+document.querySelectorAll('#sel button').forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();ovShow('');if(b.dataset.r=='0'){showTitle();return}PAUSED=0;reset();ac();if(b.dataset.r=='2')doRound2();else if(b.dataset.r=='3')doRound3();else if(b.dataset.r=='4')doRound4();else if(b.dataset.r=='5')doRound5();else if(b.dataset.r=='6')doRound6()}));
 
 // ===================== FLUJO DE JUEGO: TÍTULO · PAUSA · CONTINUAR · FINAL =====================
 const OVS=['ttl','pz','co','end','sel'];
@@ -1014,7 +1107,7 @@ function saveHi(){if(G&&G.score>HI){HI=G.score;try{localStorage.setItem('cdp3d_h
 const pad6=n=>String(n|0).padStart(6,'0');
 function showTitle(){PAUSED=0;if(!G||G.state!='menu'){reset();G.state='menu'}$('thi').textContent='RÉCORD '+pad6(HI);ovShow('ttl');setTimeout(()=>{try{$('bst').focus()}catch(e){}},50)}
 function startGame(){ac();ovShow('');reset();G.t0=performance.now()}
-function startRound(r){if(r==2)doRound2();else if(r==3)doRound3();else if(r==4)doRound4();else if(r==5)doRound5()}
+function startRound(r){if(r==2)doRound2();else if(r==3)doRound3();else if(r==4)doRound4();else if(r==5)doRound5();else if(r==6)doRound6()}
 function setPause(v){if(!G)return;if(v&&!['play','clear','arrive'].includes(G.state))return;PAUSED=v?1:0;ovShow(v?'pz':'');if(v)Object.keys(inp).forEach(k=>inp[k]=0)}
 function roundClear(next){const s=G,p=s.p;if(s.state=='clear'||s.state=='trans'||s.state=='win')return;const hb=Math.max(0,Math.round(p.hp))*20;s.score+=hb+1000;saveHi();
  s.clr='ROUND '+s.round+' CLEAR<small>VIDA +'+hb+' · RONDA +1000</small>';s.state='clear';s.clrT=170;s.clrN=next;s.es.forEach(e=>e.eb&&(e.eb.style.display='none'));
@@ -1030,16 +1123,18 @@ function showEnding(){const s=G;s.state='win';saveHi();const fd=$('fd');fd.style
   const rl=$('erl');rl.style.animation='none';void rl.offsetWidth;rl.style.animation='';$('efx').style.opacity=0;ovShow('end');fd.style.opacity=0;setTimeout(()=>{if(G===s)$('efx').style.opacity=1},4000)},2200)}
 function gTick(){const s=G;if(!s)return;if(s.up>0)s.up--;
  if(s.state=='play'&&s.score>=s.nx1){s.nx1+=10000;s.lives++;s.up=120;chime()}
+ if(s.round==6&&s.state=='play'){if(R6.gust>0){R6.gust--;const p=s.p;if(!p.held&&!(p.at>0&&p.ai==12))p.x-=.028;s.es.forEach(e=>{if(!e.boss&&!e.air&&!e.down)e.x-=.02})}else if(--R6.wT<=0){R6.gust=150;R6.wT=650+Math.random()*450|0;if(ac())try{nz(.5,.25,450,'lowpass');nz(.5,.12,900,'bandpass',AC.currentTime+.4)}catch(e){}}}
  if(s.state=='clear'&&--s.clrT<=0){const n=s.clrN;s.clrN=null;s.state='play';if(n){if(n===beginHirosaki){s.clr=''}n()}}}
 $('bst').addEventListener('click',startGame);
 $('bsl').addEventListener('click',()=>{ac();ovShow('sel')});
-$('bpr').addEventListener('click',()=>setPause(0));
+$('bpr').addEventListener('click',()=>setPause(0));$('bps').addEventListener('click',()=>ovShow('sel'));
 $('bpq').addEventListener('click',()=>{PAUSED=0;saveHi();reset();G.state='menu';showTitle()});
 $('bco').addEventListener('click',doContinue);
 $('bcq').addEventListener('click',()=>{clearInterval(coI);showTitle()});
 $('ben').addEventListener('click',()=>{reset();G.state='menu';showTitle()});
 $('pb').addEventListener('pointerdown',e=>{e.stopPropagation();setPause(!PAUSED)});
 addEventListener('keydown',e=>{const vis=k=>$(k).style.display=='flex';
+ if(/^Digit[1-6]$/.test(e.code)&&(vis('ttl')||vis('sel'))){ac();const bt=document.querySelector('#sel button[data-r="'+e.code.slice(5)+'"]');if(bt)bt.click();return}
  if(e.code=='Escape'||e.code=='KeyP'){if(vis('pz'))setPause(0);else setPause(1);return}
  if(e.code=='Enter'||e.code=='NumpadEnter'){if(vis('ttl')){e.preventDefault();startGame()}else if(vis('co')){e.preventDefault();doContinue()}else if(vis('end')&&$('efx').style.opacity=='1'){e.preventDefault();$('ben').click()}}
  if(e.code=='Space'&&!vis('ttl')&&!vis('sel'))e.preventDefault()});
