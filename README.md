@@ -88,6 +88,22 @@ docker compose up -d --scale builder=3   # más compilaciones en paralelo
 
 `APP_URL` debe ser la URL pública: las apps generadas la usan para enviar formularios y registrar usuarios.
 
+## Dirección web (appmaker7)
+
+La plataforma se publica en **appmaker7** (por ejemplo `https://appmaker7.com`; cambia la terminación por el dominio que registres). Hay que hacer tres cosas, que no se pueden automatizar desde el código:
+
+1. **Registrar el dominio** y apuntar su DNS (registro `A`) a la IP de tu servidor.
+2. **Definir `APP_URL=https://appmaker7.com`** en el `.env` del servidor. Debe ser `https`: las apps Android generadas no admiten tráfico sin cifrar y las cookies de sesión son seguras en producción. De `APP_URL` salen los enlaces de los emails, las páginas publicadas (`https://appmaker7.com/s/<nombre>`) y la dirección a la que llaman las apps instaladas.
+3. **Poner HTTPS delante** de la web (puerto 3000). Ejemplo con Caddy, que obtiene el certificado solo (no probado en este entorno):
+
+```
+appmaker7.com {
+    reverse_proxy localhost:3000
+}
+```
+
+Cambiar `APP_URL` no afecta a las apps ya compiladas: cada APK lleva dentro la dirección con la que se compiló, así que fíjala antes de compilar apps para publicar.
+
 ## Pruebas
 
 ```bash
