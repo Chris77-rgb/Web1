@@ -36,6 +36,27 @@ const JAVA_RESERVED = new Set(
   ),
 );
 
+/** Creator's own banner ad. Forjapp also shows its own ads to a share of visitors (see lib/ads.ts). */
+export const adsSchema = z
+  .object({
+    enabled: z.boolean().default(false),
+    imageUrl: z.string().max(500).default(""),
+    linkUrl: z
+      .string()
+      .max(500)
+      .refine((v) => v === "" || /^https?:\/\//i.test(v), "El enlace del anuncio debe empezar por http:// o https://")
+      .default(""),
+    label: z.string().max(60).default(""),
+    position: z.enum(["top", "bottom"]).default("bottom"),
+  })
+  .default({});
+export type AdsConfig = z.infer<typeof adsSchema>;
+
+/** True when the creator configured a complete ad of their own. */
+export function creatorHasAds(ads: Pick<AdsConfig, "enabled" | "imageUrl" | "linkUrl">): boolean {
+  return ads.enabled && !!ads.imageUrl && !!ads.linkUrl;
+}
+
 export const FONTS = ["Inter", "Roboto", "Poppins", "Merriweather", "Montserrat", "Lora", "Nunito", "Playfair Display"] as const;
 
 export const ANDROID_PERMISSIONS = [
@@ -111,6 +132,7 @@ export const appConfigSchema = z.object({
   }),
   homePageId: z.string().min(1).max(64),
   pages: z.array(pageSchema).min(1).max(50),
+  ads: adsSchema,
   integrations: z
     .object({
       push: z

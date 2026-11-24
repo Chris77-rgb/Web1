@@ -136,6 +136,7 @@ function blueprintToConfig(bp: Blueprint, current?: AppConfig): AppConfig {
     },
     homePageId: outPages[0]!.id,
     pages: outPages,
+    ads: current?.ads ?? { enabled: false, imageUrl: "", linkUrl: "", label: "", position: "bottom" },
     integrations: current?.integrations ?? { push: { enabled: false } },
   };
   return sanitize(cfg);

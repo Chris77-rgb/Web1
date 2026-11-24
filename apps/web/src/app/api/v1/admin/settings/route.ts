@@ -7,6 +7,8 @@ const schema = z.object({
   registrationOpen: z.boolean(),
   maintenanceMessage: z.string().max(300),
   supportEmail: z.string().email().max(200).or(z.literal("")),
+  /** % of visitors that see Forjapp ads when the creator has ads of their own. */
+  adSharePercent: z.number().int().min(0).max(100),
 });
 
 export const PUT = route(async (req) => {

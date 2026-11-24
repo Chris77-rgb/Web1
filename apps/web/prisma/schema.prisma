@@ -146,7 +146,16 @@ model Project {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   publishedAt       DateTime?
+  /// URL slug of the published web page (/s/<slug>). Kept when unpublishing.
+  slug              String?       @unique
+  /// Snapshot of `config` that is live on the web. Editing does not change the live page until republished.
+  publishedConfig   Json?
+  publishedRevision Int?
+  /// Per-app "Adfree" service: while active, Forjapp ads are hidden for the first N visitors of each day.
+  adfreeUntil       DateTime?
 
+  adVisitors       AdVisitorDay[]
+  adCounters       AdDayCounter[]
   builds           Build[]
   assets           Asset[]
   formSubmissions  FormSubmission[]
@@ -268,4 +277,41 @@ model Setting {
   key       String   @id
   value     Json
   updatedAt DateTime @updatedAt
+}
+
+/// Ads sold or run by Forjapp itself ("house ads"), shown on published pages.
+model HouseAd {
+  id          String   @id @default(cuid())
+  name        String
+  imageUrl    String
+  linkUrl     String
+  active      Boolean  @default(true)
+  weight      Int      @default(1)
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+/// Per project and UTC day: unique-visitor counter (for the Adfree "first 1000" rule) and Forjapp-ad stats.
+model AdDayCounter {
+  projectId   String
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  day         String
+  n           Int     @default(0)
+  impressions Int     @default(0)
+  clicks      Int     @default(0)
+
+  @@id([projectId, day])
+}
+
+/// Position (1 = first) of each visitor within a project's day. Only written for projects with Adfree active.
+model AdVisitorDay {
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  day       String
+  visitorId String
+  seq       Int
+
+  @@id([projectId, day, visitorId])
 }

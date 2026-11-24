@@ -29,7 +29,7 @@ export default async function AppsPage() {
                 key={p.id}
                 project={{
                   id: p.id, name: p.name, packageName: p.packageName, status: p.status, updatedAt: p.updatedAt.toISOString(),
-                  primary: c.theme?.primary ?? "#6D28D9", secondary: c.theme?.secondary ?? "#F59E0B", iconUrl: c.branding?.iconUrl ?? null,
+                  primary: c.theme?.primary ?? "#6D28D9", secondary: c.theme?.secondary ?? "#F59E0B", iconUrl: c.branding?.iconUrl ?? null, slug: p.slug,
                   pages: c.pages?.length ?? 0, lastBuild: p.builds[0] ?? null, unread: p._count.formSubmissions,
                 }}
               />

@@ -2,14 +2,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MoreVertical, Pencil, Hammer, Copy, Trash2, Inbox, Rocket, Undo2 } from "lucide-react";
+import { MoreVertical, Pencil, Hammer, Copy, Trash2, Inbox, Globe, WifiOff, ExternalLink } from "lucide-react";
 import { api } from "@/lib/client";
 import { useToast } from "@/components/ui/toast";
 import { BuildStatusBadge, ProjectStatusBadge, timeAgo } from "@/components/status";
 
 interface P {
   id: string; name: string; packageName: string; status: string; updatedAt: string; primary: string; secondary: string;
-  iconUrl: string | null; pages: number; lastBuild: { status: string; type: string } | null; unread: number;
+  iconUrl: string | null; slug: string | null; pages: number; lastBuild: { status: string; type: string } | null; unread: number;
 }
 
 export function ProjectCard({ project: p }: { project: P }) {
@@ -63,9 +63,12 @@ export function ProjectCard({ project: p }: { project: P }) {
             <MenuLink href={`/apps/${p.id}/editor`} icon={<Pencil className="size-4" />}>Editar</MenuLink>
             <MenuLink href={`/apps/${p.id}/builds`} icon={<Hammer className="size-4" />}>Compilar y descargar</MenuLink>
             <MenuLink href={`/apps/${p.id}/data`} icon={<Inbox className="size-4" />}>Formularios y usuarios</MenuLink>
-            <MenuBtn icon={p.status === "PUBLISHED" ? <Undo2 className="size-4" /> : <Rocket className="size-4" />} onClick={() => act(() => api(`/api/v1/projects/${p.id}`, { method: "PATCH", body: { status: p.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED" } }), "Estado actualizado")}>
-              {p.status === "PUBLISHED" ? "Marcar en desarrollo" : "Marcar como publicada"}
-            </MenuBtn>
+            {p.status === "PUBLISHED" && p.slug && <MenuLink href={`/s/${p.slug}`} icon={<ExternalLink className="size-4" />} external>Ver página web</MenuLink>}
+            {p.status === "PUBLISHED" ? (
+              <MenuBtn icon={<WifiOff className="size-4" />} onClick={() => act(() => api(`/api/v1/projects/${p.id}/publish`, { method: "DELETE" }), "Página despublicada")}>Despublicar</MenuBtn>
+            ) : (
+              <MenuBtn icon={<Globe className="size-4" />} onClick={() => act(() => api(`/api/v1/projects/${p.id}/publish`, { method: "POST" }), "¡Página publicada!")}>Publicar como web</MenuBtn>
+            )}
             <MenuBtn icon={<Copy className="size-4" />} onClick={() => act(() => api(`/api/v1/projects/${p.id}/duplicate`, { method: "POST" }), "App duplicada")}>Duplicar</MenuBtn>
             <MenuBtn danger icon={<Trash2 className="size-4" />} onClick={() => confirm(`¿Eliminar "${p.name}" y todas sus compilaciones? Esta acción no se puede deshacer.`) && act(() => api(`/api/v1/projects/${p.id}`, { method: "DELETE" }), "App eliminada")}>Eliminar</MenuBtn>
           </div>
@@ -76,8 +79,8 @@ export function ProjectCard({ project: p }: { project: P }) {
 }
 
 const itemCls = "flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm hover:bg-card-2";
-function MenuLink({ href, icon, children }: { href: string; icon: React.ReactNode; children: React.ReactNode }) {
-  return <Link href={href} className={itemCls}>{icon}{children}</Link>;
+function MenuLink({ href, icon, children, external }: { href: string; icon: React.ReactNode; children: React.ReactNode; external?: boolean }) {
+  return <Link href={href} className={itemCls} {...(external ? { target: "_blank", rel: "noreferrer" } : {})}>{icon}{children}</Link>;
 }
 function MenuBtn({ icon, children, onClick, danger }: { icon: React.ReactNode; children: React.ReactNode; onClick: () => void; danger?: boolean }) {
   return <button onClick={onClick} className={`${itemCls} ${danger ? "text-red-600" : ""}`}>{icon}{children}</button>;

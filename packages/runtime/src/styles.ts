@@ -127,6 +127,11 @@ hr.dv{border:0;border-top:1px solid rgba(127,127,127,.25);margin:0;width:100%}
 .splash img{width:110px;height:110px;object-fit:contain;border-radius:24px}
 .splash .nm{font-size:26px;font-weight:800}
 .badge{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);font-size:11px;opacity:.5;pointer-events:none}
+.adbar{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:6px 12px;background:var(--sf);color:var(--tx);text-decoration:none;flex-shrink:0;border-top:1px solid rgba(127,127,127,.18);border-bottom:1px solid rgba(127,127,127,.18)}
+.adbar img{max-height:44px;max-width:100%;object-fit:contain;border-radius:6px}
+.adbar .adtext{font-size:13px;font-weight:600}
+.adbar .adlabel{position:absolute;right:6px;top:1px;font-size:9px;font-style:normal;text-transform:uppercase;letter-spacing:.04em;opacity:.55}
+.adnote{padding:6px 12px;font-size:11px;text-align:center;border:1px dashed rgba(127,127,127,.5);color:var(--tx);opacity:.65;flex-shrink:0;margin:4px 8px;border-radius:8px}
 [data-block-id].sel{outline:2px dashed var(--s);outline-offset:3px}
 .preview [data-block-id]:hover{outline:1px dashed rgba(127,127,127,.6);outline-offset:3px}
 `;

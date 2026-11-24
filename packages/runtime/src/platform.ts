@@ -23,7 +23,10 @@ export interface RuntimeEnv {
   /** Base URL of the Forjapp platform (forms, app users, RSS proxy). */
   apiBase: string;
   projectId: string;
-  mode: "preview" | "app";
+  /** preview = editor iframe, app = inside the APK, web = published page. */
+  mode: "preview" | "app" | "web";
+  /** Anonymous, stable id of the visitor (set by the published-page shell). Used to split ads 80/20. */
+  visitor?: string;
 }
 
 export function env(): RuntimeEnv {

@@ -80,6 +80,7 @@ function make(
     },
     homePageId: pages[0]!.id,
     pages,
+    ads: { enabled: false, imageUrl: "", linkUrl: "", label: "", position: "bottom" },
     integrations: { push: { enabled: false } },
   };
 }

@@ -2,7 +2,7 @@ import { z } from "zod";
 import { route, body, ok, requireUser, ApiError } from "@/lib/api";
 import { db } from "@/lib/db";
 import { getOwnedProject, parseConfig } from "@/lib/projects";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -14,7 +14,8 @@ export const GET = route<Ctx>(async (_req, { params }) => {
 
 const patchSchema = z.object({
   config: z.unknown().optional(),
-  status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]).optional(),
+  /** DRAFT/PUBLISHED are managed by /publish; only archiving is allowed here. */
+  status: z.literal("ARCHIVED").optional(),
   /** Revision the client edited. If it doesn't match, someone else saved first → 409. */
   revision: z.number().int().optional(),
 });
@@ -38,7 +39,7 @@ export const PATCH = route<Ctx>(async (req, { params }) => {
   }
   if (data.status) {
     update.status = data.status;
-    if (data.status === "PUBLISHED" && !project.publishedAt) update.publishedAt = new Date();
+    update.publishedConfig = Prisma.DbNull; // archived pages go offline
   }
   // Conditional update guards against a concurrent save between the read and the write.
   const res = await db.project.updateMany({ where: { id: project.id, revision: project.revision }, data: update as Prisma.ProjectUpdateManyMutationInput });

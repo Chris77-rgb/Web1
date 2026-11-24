@@ -11,6 +11,7 @@ import { icon } from "./icons";
 import { BASE_CSS, themeCss } from "./styles";
 import { renderBlock, type Ctx, type RssItem } from "./blocks";
 import { assetUrl, env } from "./platform";
+import { adBar } from "./ads";
 
 declare global {
   interface Window {
@@ -48,7 +49,7 @@ function ensureStyle(id: string, css: string) {
 }
 
 function loadFont(font: string) {
-  if (font === "Inter" && !isPreview()) return; // system fallback is fine offline
+  if (font === "Inter" && env().mode === "app") return; // system fallback is fine inside the APK (offline)
   const id = "forjapp-font";
   const href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;600;700;800&display=swap`;
   let link = document.getElementById(id) as HTMLLinkElement | null;
@@ -176,12 +177,15 @@ function render() {
         ]
       : [];
 
-  root.replaceChildren(...[header, main, tabbar, ...drawer].filter(Boolean) as HTMLElement[]);
+  const ad = adBar(cfg, render);
+  const adTop = ad && ad.pos === "top" ? ad.el : null;
+  const adBottom = ad && ad.pos === "bottom" ? ad.el : null;
+  root.replaceChildren(...[header, adTop, main, adBottom, tabbar, ...drawer].filter(Boolean) as HTMLElement[]);
   if (prevScroll) main.scrollTop = prevScroll;
 }
 
 function splash(cfg: AppConfig) {
-  if (isPreview()) return;
+  if (isPreview() || env().mode === "web") return;
   const logo = assetUrl(cfg.branding.iconUrl || cfg.branding.logoUrl);
   const s = h(
     "div",

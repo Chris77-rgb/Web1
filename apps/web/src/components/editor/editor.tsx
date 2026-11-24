@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft, Check, CloudOff, Hammer, Layers, Loader2, Navigation, Palette, Redo2, Settings2, Sparkles, Stamp, Undo2, Smartphone, PencilLine, Wand2,
+  ArrowLeft, Check, Globe, Megaphone, CloudOff, Hammer, Layers, Loader2, Navigation, Palette, Redo2, Settings2, Sparkles, Stamp, Undo2, Smartphone, PencilLine, Wand2,
 } from "lucide-react";
 import { validateAppConfig, type AppConfig, type PlanCode } from "@forjapp/shared";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,11 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { api, upload, HttpError } from "@/lib/client";
 import { cn } from "@/lib/cn";
 import { PhonePreview } from "./phone-preview";
+import { AdsPanel } from "./ads-panel";
+import { PublishModal, type LiveState } from "./publish-modal";
 import { BlockInspector, BrandPanel, DesignPanel, NavPanel, PageInspector, PagesPanel, Section, SettingsPanel } from "./panels";
 
-type Tab = "pages" | "design" | "nav" | "brand" | "settings" | "ai";
+type Tab = "pages" | "design" | "nav" | "brand" | "ads" | "settings" | "ai";
 type SaveState = "saved" | "dirty" | "saving" | "error" | "invalid";
 
 const TABS: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -24,6 +26,7 @@ const TABS: { id: Tab; label: string; icon: React.ComponentType<{ className?: st
   { id: "design", label: "Diseño", icon: Palette },
   { id: "nav", label: "Navegación", icon: Navigation },
   { id: "brand", label: "Marca", icon: Stamp },
+  { id: "ads", label: "Anuncios", icon: Megaphone },
   { id: "settings", label: "Android", icon: Settings2 },
   { id: "ai", label: "IA", icon: Sparkles },
 ];
@@ -31,7 +34,12 @@ const TABS: { id: Tab; label: string; icon: React.ComponentType<{ className?: st
 const AUTOSAVE_MS = 1200;
 const HISTORY_LIMIT = 60;
 
-export function Editor({ project, planCode }: { project: { id: string; revision: number; config: AppConfig; status: string }; planCode: PlanCode }) {
+export interface EditorProject {
+  id: string; revision: number; config: AppConfig; status: string;
+  slug: string | null; publishedRevision: number | null; adfreeUntil: string | null;
+}
+
+export function Editor({ project, planCode, sharePercent }: { project: EditorProject; planCode: PlanCode; sharePercent: number }) {
   const toast = useToast();
   const router = useRouter();
   const [config, setConfig] = useState<AppConfig>(project.config);
@@ -42,6 +50,9 @@ export function Editor({ project, planCode }: { project: { id: string; revision:
   const [errors, setErrors] = useState<string[]>([]);
   const [conflict, setConflict] = useState(false);
   const [mobileView, setMobileView] = useState<"edit" | "preview">("edit");
+  const [live, setLive] = useState<LiveState>({ slug: project.slug, liveRevision: project.status === "PUBLISHED" ? project.publishedRevision : null });
+  const [publishOpen, setPublishOpen] = useState(false);
+  const [liveRev, setLiveRev] = useState(project.revision);
 
   const revision = useRef(project.revision);
   const past = useRef<AppConfig[]>([]);
@@ -67,6 +78,7 @@ export function Editor({ project, planCode }: { project: { id: string; revision:
       try {
         const res = await api<{ project: { revision: number } }>(`/api/v1/projects/${project.id}`, { method: "PATCH", body: { config: snapshot, revision: revision.current } });
         revision.current = res.project.revision;
+        setLiveRev(res.project.revision);
         setSave(latest.current === snapshot ? "saved" : "dirty");
         return true;
       } catch (e) {
@@ -185,6 +197,7 @@ export function Editor({ project, planCode }: { project: { id: string; revision:
       {tab === "design" && <DesignPanel {...panelProps} />}
       {tab === "nav" && <NavPanel {...panelProps} />}
       {tab === "brand" && <BrandPanel {...panelProps} />}
+      {tab === "ads" && <AdsPanel config={config} update={update} ctx={ctx} sharePercent={sharePercent} adfreeUntil={project.adfreeUntil} />}
       {tab === "settings" && <SettingsPanel {...panelProps} planCode={planCode} onUploadGoogleServices={uploadGoogleServices} />}
       {tab === "ai" && <AiPanel config={config} onApply={replace} />}
     </div>
@@ -210,7 +223,8 @@ export function Editor({ project, planCode }: { project: { id: string; revision:
           <Button variant="ghost" size="sm" onClick={redo} disabled={!future.current.length} aria-label="Rehacer" title="Rehacer (Ctrl+Shift+Z)"><Redo2 className="size-4" /></Button>
           <ThemeToggle />
         </div>
-        <Button onClick={goBuild} size="sm"><Hammer className="size-4" /><span className="hidden sm:inline">Generar APK</span></Button>
+        <Button variant="outline" onClick={goBuild} size="sm" className="hidden md:inline-flex" title="Generar un archivo APK/AAB para Android"><Hammer className="size-4" />APK</Button>
+        <Button onClick={() => setPublishOpen(true)} size="sm"><Globe className="size-4" /><span className="hidden sm:inline">{live.liveRevision !== null ? "Publicada" : "Publicar"}</span></Button>
       </header>
 
       {errors.length > 0 && (
@@ -260,6 +274,20 @@ export function Editor({ project, planCode }: { project: { id: string; revision:
         {/* Inspector (wide screens) */}
         {tab === "pages" && <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-line bg-card xl:block scroll-thin">{inspector}</aside>}
       </div>
+
+      <PublishModal
+        open={publishOpen}
+        onClose={() => setPublishOpen(false)}
+        projectId={project.id}
+        live={live}
+        currentRevision={liveRev}
+        saving={save === "saving"}
+        onChange={setLive}
+        beforePublish={async () => {
+          clearTimeout(timer.current);
+          return save === "saved" ? true : await persist();
+        }}
+      />
 
       <Modal open={conflict} onClose={() => setConflict(false)} title="Cambios en otra pestaña">
         <p className="text-sm text-muted">Este proyecto se ha guardado desde otra pestaña o dispositivo. Para no sobrescribir esos cambios, recarga el editor.</p>

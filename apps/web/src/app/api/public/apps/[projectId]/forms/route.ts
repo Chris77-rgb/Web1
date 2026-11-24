@@ -7,7 +7,7 @@ const schema = z.object({
   blockId: z.string().max(64),
   formTitle: z.string().max(200).default(""),
   data: z.record(z.string().max(200), z.string().max(5000)).refine((d) => Object.keys(d).length <= 30, "Demasiados campos"),
-  source: z.enum(["app", "preview"]).default("app"),
+  source: z.enum(["app", "preview", "web"]).default("app"),
 });
 
 export const POST = route<{ params: Promise<{ projectId: string }> }>(async (req, { params }) => {

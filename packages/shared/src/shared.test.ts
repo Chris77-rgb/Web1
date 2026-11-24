@@ -30,3 +30,16 @@ test("cross-reference validation catches missing home page", () => {
   const r = validateAppConfig(cfg);
   assert.ok(!r.ok);
 });
+
+test("ads config: old configs parse with defaults and links must be http(s)", async () => {
+  const { appConfigSchema, creatorHasAds } = await import("./index");
+  const cfg = structuredClone(TEMPLATES[0]!.config) as Record<string, unknown>;
+  delete cfg.ads; // configs saved before ads existed
+  const parsed = appConfigSchema.parse(cfg);
+  assert.equal(parsed.ads.enabled, false);
+  assert.ok(!creatorHasAds(parsed.ads));
+  const mine = { ...parsed.ads, enabled: true, imageUrl: "https://x.test/a.png", linkUrl: "https://x.test" };
+  assert.ok(creatorHasAds(mine));
+  assert.ok(!creatorHasAds({ ...mine, imageUrl: "" }));
+  assert.ok(!appConfigSchema.safeParse({ ...parsed, ads: { ...mine, linkUrl: "javascript:alert(1)" } }).success);
+});

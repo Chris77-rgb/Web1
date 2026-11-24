@@ -49,3 +49,23 @@ test("extractJson tolerates code fences and surrounding text from any provider",
   assert.deepEqual(extractJson('Aquí tienes: {"a":{"b":[1,2]}} gracias'), { a: { b: [1, 2] } });
   assert.throws(() => extractJson("sin json"));
 });
+
+test("ad split: 100% Forjapp without creator ads, 20% with them, Adfree for the first 1000 daily visitors", async () => {
+  const { decideAd, visitorBucket, ADFREE_FREE_VISITORS } = await import("../src/lib/ads.ts");
+  const base = { sharePercent: 20, adfreeSeq: null as number | null };
+  // No creator ads → Forjapp shows ads to everybody.
+  for (let b = 0; b < 100; b++) assert.equal(decideAd({ ...base, creatorHasAds: false, bucket: b }), "forjapp");
+  // Creator ads → exactly 20 of 100 buckets are Forjapp's.
+  let forjapp = 0;
+  for (let b = 0; b < 100; b++) if (decideAd({ ...base, creatorHasAds: true, bucket: b }) === "forjapp") forjapp++;
+  assert.equal(forjapp, 20);
+  // Adfree: first 1000 visitors see no Forjapp ads (creator's ad still shows); visitor 1001 is back to normal.
+  assert.equal(decideAd({ ...base, creatorHasAds: true, bucket: 5, adfreeSeq: 1 }), "creator");
+  assert.equal(decideAd({ ...base, creatorHasAds: false, bucket: 5, adfreeSeq: ADFREE_FREE_VISITORS }), "none");
+  assert.equal(decideAd({ ...base, creatorHasAds: false, bucket: 5, adfreeSeq: ADFREE_FREE_VISITORS + 1 }), "forjapp");
+  // Buckets are stable per visitor and roughly uniform.
+  assert.equal(visitorBucket("abc-visitor-1", "p1"), visitorBucket("abc-visitor-1", "p1"));
+  let low = 0;
+  for (let i = 0; i < 5000; i++) if (visitorBucket(`visitor-${i}`, "project") < 20) low++;
+  assert.ok(low > 800 && low < 1200, `bucket distribution off: ${low}/5000`);
+});

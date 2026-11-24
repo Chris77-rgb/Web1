@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard, Smartphone, PlusCircle, User, CreditCard, Shield, Users, FolderKanban, LayoutTemplate, Layers, Settings, LogOut, Menu, X, Hammer,
+  LayoutDashboard, Smartphone, PlusCircle, User, CreditCard, Shield, Users, FolderKanban, LayoutTemplate, Layers, Settings, LogOut, Menu, X, Hammer, Megaphone,
 } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -26,6 +26,7 @@ const ADMIN = [
   { href: "/admin/users", label: "Usuarios", icon: Users },
   { href: "/admin/projects", label: "Proyectos", icon: FolderKanban },
   { href: "/admin/builds", label: "Compilaciones", icon: Hammer },
+  { href: "/admin/ads", label: "Anuncios", icon: Megaphone },
   { href: "/admin/templates", label: "Plantillas", icon: LayoutTemplate },
   { href: "/admin/plans", label: "Planes", icon: Layers },
   { href: "/admin/settings", label: "Configuración", icon: Settings },
