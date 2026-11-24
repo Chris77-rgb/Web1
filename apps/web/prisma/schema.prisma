@@ -1,0 +1,266 @@
+// Forjapp data model. See docs/ARCHITECTURE.md for an overview.
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum TokenType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum BuildType {
+  APK
+  AAB
+}
+
+enum BuildStatus {
+  QUEUED
+  RUNNING
+  SUCCESS
+  FAILED
+  CANCELED
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String
+  passwordHash    String
+  role            Role      @default(USER)
+  emailVerifiedAt DateTime?
+  avatarUrl       String?
+  disabled        Boolean   @default(false)
+  planCode        String    @default("FREE")
+  plan            Plan      @relation(fields: [planCode], references: [code])
+  stripeCustomerId String?  @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastLoginAt     DateTime?
+
+  sessions      Session[]
+  tokens        AuthToken[]
+  projects      Project[]
+  builds        Build[]
+  assets        Asset[]
+  subscription  Subscription?
+  aiRequests    AiRequest[]
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent  String?
+  ip         String?
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+}
+
+model AuthToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  type      TokenType
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, type])
+}
+
+model Plan {
+  code                  String   @id
+  name                  String
+  description           String   @default("")
+  priceMonthlyCents     Int      @default(0)
+  currency              String   @default("eur")
+  maxProjects           Int
+  maxBuildsPerMonth     Int
+  maxStorageMb          Int
+  maxAiRequestsPerMonth Int
+  features              String[]
+  stripePriceId         String?
+  active                Boolean  @default(true)
+  sortOrder             Int      @default(0)
+  updatedAt             DateTime @updatedAt
+
+  users         User[]
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planCode             String
+  plan                 Plan     @relation(fields: [planCode], references: [code])
+  status               String   // active | trialing | past_due | canceled
+  stripeSubscriptionId String?  @unique
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Project {
+  id                String        @id @default(cuid())
+  userId            String
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name              String
+  packageName       String
+  category          String        @default("blank")
+  templateId        String?
+  status            ProjectStatus @default(DRAFT)
+  /// AppConfig JSON (see packages/shared/src/schema.ts)
+  config            Json
+  /// Incremented on each save; used for optimistic concurrency in the editor.
+  revision          Int           @default(1)
+  /// Android signing key (AES-GCM encrypted password). Generated on first build.
+  keystoreKey       String?
+  keystorePassword  String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  publishedAt       DateTime?
+
+  builds           Build[]
+  assets           Asset[]
+  formSubmissions  FormSubmission[]
+  appUsers         AppUser[]
+  pushDevices      PushDevice[]
+
+  @@unique([userId, packageName])
+  @@index([userId, updatedAt])
+}
+
+model Build {
+  id            String      @id @default(cuid())
+  projectId     String
+  project       Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          BuildType
+  status        BuildStatus @default(QUEUED)
+  priority      Int         @default(0)
+  versionCode   Int
+  versionName   String
+  /// Snapshot of the AppConfig at queue time — builds are reproducible.
+  configSnapshot Json
+  log           String      @default("")
+  error         String?
+  artifactKey   String?
+  artifactSize  Int?
+  downloads     Int         @default(0)
+  workerId      String?
+  attempts      Int         @default(0)
+  queuedAt      DateTime    @default(now())
+  startedAt     DateTime?
+  finishedAt    DateTime?
+
+  @@index([status, priority, queuedAt])
+  @@index([projectId, queuedAt])
+  @@index([userId, queuedAt])
+}
+
+model Asset {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  key       String   @unique
+  mime      String
+  size      Int
+  filename  String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Template {
+  id          String   @id
+  name        String
+  category    String
+  description String   @default("")
+  accent      String   @default("#6D28D9")
+  config      Json
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FormSubmission {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  blockId   String
+  formTitle String   @default("")
+  data      Json
+  source    String   @default("app")
+  ip        String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([projectId, createdAt])
+}
+
+model AppUser {
+  id           String   @id @default(cuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  email        String
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  @@unique([projectId, email])
+}
+
+model PushDevice {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  token     String
+  platform  String   @default("android")
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, token])
+}
+
+model AiRequest {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prompt    String
+  model     String
+  ok        Boolean
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}

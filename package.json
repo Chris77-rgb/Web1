@@ -1,0 +1,24 @@
+{
+  "name": "forjapp",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Forjapp — plataforma SaaS no-code para crear aplicaciones Android",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run build:runtime && npm run dev -w @forjapp/web",
+    "dev:builder": "npm run dev -w @forjapp/builder",
+    "build": "npm run build:runtime && npm run build -w @forjapp/web",
+    "build:runtime": "npm run build -w @forjapp/runtime",
+    "db:migrate": "npm run db:migrate -w @forjapp/web",
+    "db:deploy": "npm run db:deploy -w @forjapp/web",
+    "db:seed": "npm run db:seed -w @forjapp/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

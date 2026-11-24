@@ -1,0 +1,14 @@
+node_modules/
+.next/
+dist/
+.env
+.env.local
+storage/
+*.log
+apps/web/public/runtime/
+apps/builder/work/
+.gradle/
+build/
+local.properties
+*.tsbuildinfo
+next-env.d.ts

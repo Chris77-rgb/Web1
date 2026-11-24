@@ -1,0 +1,16 @@
+{
+  "name": "@forjapp/runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Renders an AppConfig as a mobile app. Used by the web preview and bundled inside generated Android apps.",
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@forjapp/shared": "0.1.0",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.2"
+  }
+}

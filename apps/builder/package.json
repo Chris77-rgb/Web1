@@ -1,0 +1,26 @@
+{
+  "name": "@forjapp/builder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Android build worker: consumes the Build queue, generates the Gradle project and compiles APK/AAB.",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "build-once": "tsx src/cli.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --import tsx --test src/*.test.ts",
+    "postinstall": "prisma generate --schema ../web/prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@forjapp/shared": "0.1.0",
+    "@prisma/client": "^6.1.0",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "prisma": "^6.1.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,12 @@
+**/node_modules
+**/.next
+**/dist
+**/.gradle
+**/build
+apps/builder/work
+apps/web/public/runtime
+storage
+.env
+.env.*
+!.env.example
+.git

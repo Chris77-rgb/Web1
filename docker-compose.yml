@@ -1,0 +1,58 @@
+# Full Forjapp stack: docker compose up --build
+# Then open http://localhost:3000 (admin user from SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD).
+x-env: &env
+  DATABASE_URL: postgresql://forjapp:forjapp@db:5432/forjapp
+  APP_URL: ${APP_URL:-http://localhost:3000}
+  ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Define ENCRYPTION_KEY (32+ chars) in .env}
+  STORAGE_DIR: /data/storage
+  SMTP_URL: ${SMTP_URL:-}
+  MAIL_FROM: ${MAIL_FROM:-Forjapp <no-reply@forjapp.local>}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  AI_MODEL: ${AI_MODEL:-claude-opus-5-5}
+  STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+  SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@forjapp.local}
+  SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-Admin12345!}
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: forjapp
+      POSTGRES_PASSWORD: forjapp
+      POSTGRES_DB: forjapp
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U forjapp"]
+      interval: 5s
+      retries: 20
+
+  migrate:
+    build: { context: ., dockerfile: apps/web/Dockerfile, target: migrate }
+    environment: *env
+    depends_on: { db: { condition: service_healthy } }
+    restart: "no"
+
+  web:
+    build: { context: ., dockerfile: apps/web/Dockerfile, target: runner }
+    environment: *env
+    ports: ["3000:3000"]
+    volumes: [storage:/data/storage]
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    restart: unless-stopped
+
+  builder:
+    build: { context: ., dockerfile: apps/builder/Dockerfile }
+    environment:
+      <<: *env
+      BUILDER_CONCURRENCY: ${BUILDER_CONCURRENCY:-1}
+      BUILD_TIMEOUT_MINUTES: ${BUILD_TIMEOUT_MINUTES:-20}
+    volumes: [storage:/data/storage, gradle-cache:/root/.gradle]
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    restart: unless-stopped
+    # Scale horizontally: docker compose up --scale builder=3
+
+volumes:
+  pgdata:
+  storage:
+  gradle-cache:
