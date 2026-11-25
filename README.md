@@ -88,6 +88,10 @@ docker compose up -d --scale builder=3   # más compilaciones en paralelo
 
 `APP_URL` debe ser la URL pública: las apps generadas la usan para enviar formularios y registrar usuarios.
 
+## Demo gratuita (GitHub Pages)
+
+`docs/index.html` es una demo autónoma en un solo archivo: plantillas, editor básico y vista previa con el mismo motor que el APK. No necesita servidor, así que no tiene cuentas ni genera APK/AAB. Para publicarla gratis: **Settings → Pages → Deploy from a branch**, elige esta rama y la carpeta **`/docs`**. GitHub mostrará la URL en esa misma pantalla. En repositorios privados, Pages necesita un plan de pago de GitHub.
+
 ## Dirección web (appmaker7)
 
 Guía completa para ponerla en internet en un servidor: **[DEPLOY.md](DEPLOY.md)** (un solo comando: `sudo DOMAIN=appmaker7.com bash deploy/install.sh`).

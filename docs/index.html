@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Demo gratuita de Forjapp: crea tu app Android en el navegador y mírala al instante en un móvil simulado.">
+<title>Forjapp Demo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: tools column on the left, a live Android phone on the right; on phones the two become tabs. */
+:root {
+  --bg: #f5f4fa;
+  --panel: #ffffff;
+  --line: #e4e1ee;
+  --fg: #16131f;
+  --muted: #625d75;
+  --brand: #6d28d9;
+  --brand-ink: #ffffff;
+  --brand-soft: #efe9fd;
+  --accent: #b45309;
+  --accent-soft: #fdf1e0;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e0c16; --panel: #17141f; --line: #2b2740; --fg: #ece9f6; --muted: #a39eb8;
+    --brand: #a07bff; --brand-ink: #140d26; --brand-soft: #251c3f; --accent: #fbbf24; --accent-soft: #2e2412;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e0c16; --panel: #17141f; --line: #2b2740; --fg: #ece9f6; --muted: #a39eb8;
+  --brand: #a07bff; --brand-ink: #140d26; --brand-soft: #251c3f; --accent: #fbbf24; --accent-soft: #2e2412;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 32px;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+.top { max-width: 1240px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding-block: 20px 16px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand svg { width: 34px; height: 34px; flex-shrink: 0; }
+.brand h1 { font-size: 22px; letter-spacing: -.01em; }
+.chip { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 4px 10px; border-radius: 999px; }
+.top p { margin: 0; color: var(--muted); font-size: 14px; flex: 1 1 320px; min-width: 0; }
+
+.tabs { display: none; max-width: 1240px; margin: 0 auto 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 4px; }
+.tabs button { flex: 1; border: 0; background: none; padding: 9px; border-radius: 9px; font-weight: 600; cursor: pointer; color: var(--muted); }
+.tabs button[aria-selected="true"] { background: var(--brand); color: var(--brand-ink); }
+
+.layout { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; align-items: start; }
+.panel { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.step { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.step-head { display: flex; align-items: baseline; gap: 10px; }
+.step-num { font-family: var(--font-display); font-weight: 700; color: var(--brand); font-size: 15px; font-variant-numeric: tabular-nums; }
+.step-head h2 { font-size: 18px; }
+.step-head p { margin: 0 0 0 auto; color: var(--muted); font-size: 13px; }
+
+.templates { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.tpl { text-align: left; border: 2px solid var(--line); background: var(--panel); border-radius: 12px; padding: 0; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }
+.tpl[aria-pressed="true"] { border-color: var(--brand); }
+.tpl .sw { height: 46px; }
+.tpl .tx { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 2px; }
+.tpl strong { font-size: 14px; }
+.tpl span { font-size: 12px; color: var(--muted); }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+label.f { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; min-width: 0; }
+.inp, select.inp { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 9px 11px; font-weight: 400; min-width: 0; }
+textarea.inp { resize: vertical; min-height: 64px; }
+.color { display: flex; gap: 8px; align-items: center; }
+.color input[type="color"] { width: 42px; height: 38px; padding: 2px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); flex-shrink: 0; cursor: pointer; }
+.seg { display: flex; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
+.seg button { flex: 1; border: 0; background: none; padding: 7px; border-radius: 8px; cursor: pointer; font-weight: 500; }
+.seg button[aria-pressed="true"] { background: var(--panel); box-shadow: 0 1px 3px rgba(0,0,0,.12); font-weight: 600; }
+
+.pages { display: flex; flex-wrap: wrap; gap: 8px; }
+.pages button { border: 1px solid var(--line); background: var(--bg); padding: 6px 12px; border-radius: 999px; cursor: pointer; font-size: 14px; }
+.pages button[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); font-weight: 600; }
+.blocks { display: flex; flex-direction: column; gap: 10px; }
+.block { border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: var(--panel); }
+.block.sel { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+.block-head { display: flex; align-items: center; gap: 6px; }
+.block-head strong { flex: 1; font-size: 14px; min-width: 0; }
+.icon-btn { border: 1px solid var(--line); background: var(--bg); border-radius: 8px; width: 30px; height: 30px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+.icon-btn:disabled { opacity: .4; cursor: default; }
+.muted { color: var(--muted); font-size: 13px; margin: 0; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid transparent; background: var(--brand); color: var(--brand-ink); padding: 9px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; }
+.btn.ghost { background: var(--bg); color: var(--fg); border-color: var(--line); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-weight: 600; font-size: 14px; }
+.switch input { width: 20px; height: 20px; accent-color: var(--brand); }
+.note { background: var(--brand-soft); border-radius: 10px; padding: 12px; font-size: 13px; margin: 0; }
+.rules { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.rules strong { color: var(--fg); }
+
+.stage { position: sticky; top: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
+.phone { height: min(700px, calc(100dvh - 90px)); aspect-ratio: 34 / 70; max-width: 100%; background: #111018; border-radius: 44px; padding: 11px; box-shadow: 0 20px 50px rgba(20, 10, 40, .25); position: relative; }
+.screen { width: 100%; height: 100%; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; background: #fff; }
+.statusbar { height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; font-size: 11px; font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; }
+.screen iframe { flex: 1; width: 100%; border: 0; display: block; }
+.homebar { height: 18px; flex-shrink: 0; background: #000; display: flex; align-items: center; justify-content: center; }
+.homebar span { width: 90px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.7); }
+.stage .muted { text-align: center; max-width: 320px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; max-width: calc(100% - 32px); }
+.toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+textarea.hidden-copy { position: absolute; left: -9999px; }
+
+@media (max-width: 900px) {
+  .tabs { display: flex; }
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  body:not(.show-preview) .stage { display: none; }
+  body.show-preview .panel { display: none; }
+  .stage { position: static; }
+  .phone { height: min(640px, calc(100dvh - 160px)); }
+}
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+<style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c4dff"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs><rect width="32" height="32" rx="9" fill="url(#lg)"/><path d="M11 9h11v3.2h-7.4v3h6.4v3.2h-6.4V23H11z" fill="#fff"/></svg>
+    <h1>Forjapp</h1>
+  </div>
+  <span class="chip">Demo gratuita</span>
+  <p>Crea tu app en el navegador y mírala al instante en el móvil. Sin cuenta: los cambios se guardan solo en este navegador.</p>
+</header>
+
+<div class="tabs" role="tablist" aria-label="Vista">
+  <button id="tab-edit" role="tab" aria-selected="true">Editar</button>
+  <button id="tab-preview" role="tab" aria-selected="false">Vista previa</button>
+</div>
+
+<main class="layout">
+  <div class="panel" id="panel">
+    <section class="step" aria-labelledby="s1">
+      <div class="step-head"><span class="step-num">1</span><h2 id="s1">Elige una plantilla</h2><p>Puedes cambiarla luego</p></div>
+      <div class="templates" id="templates"></div>
+    </section>
+
+    <section class="step" aria-labelledby="s2">
+      <div class="step-head"><span class="step-num">2</span><h2 id="s2">Personaliza el diseño</h2></div>
+      <div class="grid2">
+        <label class="f" for="app-name">Nombre de la app<input class="inp" id="app-name" maxlength="50"></label>
+        <label class="f" for="app-font">Tipografía<select class="inp" id="app-font"></select></label>
+        <div class="f"><span>Color principal</span><div class="color"><input type="color" id="c-primary" aria-label="Color principal"><input class="inp" id="c-primary-hex" maxlength="7" aria-label="Color principal en hexadecimal"></div></div>
+        <div class="f"><span>Color de acento</span><div class="color"><input type="color" id="c-secondary" aria-label="Color de acento"><input class="inp" id="c-secondary-hex" maxlength="7" aria-label="Color de acento en hexadecimal"></div></div>
+        <div class="f"><span>Modo</span><div class="seg" id="app-mode"><button data-mode="light" aria-pressed="true">Claro</button><button data-mode="dark" aria-pressed="false">Oscuro</button></div></div>
+        <label class="f" for="app-radius">Redondez de esquinas <span class="muted" id="radius-val"></span><input type="range" id="app-radius" min="0" max="28" style="accent-color: var(--brand)"></label>
+      </div>
+    </section>
+
+    <section class="step" aria-labelledby="s3">
+      <div class="step-head"><span class="step-num">3</span><h2 id="s3">Páginas y contenido</h2><p>Pulsa un bloque en el móvil para editarlo</p></div>
+      <div class="pages" id="pages" role="group" aria-label="Páginas"></div>
+      <label class="f" for="page-title">Título de la página<input class="inp" id="page-title" maxlength="60"></label>
+      <div class="blocks" id="blocks"></div>
+      <div class="row">
+        <select class="inp" id="add-type" aria-label="Tipo de bloque" style="flex: 1 1 180px; width: auto"></select>
+        <button class="btn ghost" id="add-block">Añadir bloque</button>
+      </div>
+    </section>
+
+    <section class="step" aria-labelledby="s4">
+      <div class="step-head"><span class="step-num">4</span><h2 id="s4">Publicidad</h2></div>
+      <label class="switch" for="ad-on">Mostrar mi propio anuncio<input type="checkbox" id="ad-on"></label>
+      <div class="grid2" id="ad-fields">
+        <label class="f" for="ad-label">Texto del anuncio<input class="inp" id="ad-label" maxlength="60" placeholder="Ej.: 20 % de descuento hoy"></label>
+        <label class="f" for="ad-link">Enlace<input class="inp" id="ad-link" maxlength="300" placeholder="https://tu-web.com"></label>
+      </div>
+      <ul class="rules">
+        <li>Sin anuncio propio: Forjapp muestra su publicidad al <strong>100 %</strong> de los usuarios.</li>
+        <li>Con anuncio propio: Forjapp la muestra al <strong>20 %</strong> y el resto ve el tuyo.</li>
+        <li>Servicio <strong>Adfree</strong> (por app): sin anuncios de Forjapp para los 1.000 primeros usuarios de cada día.</li>
+      </ul>
+    </section>
+
+    <section class="step" aria-labelledby="s5">
+      <div class="step-head"><span class="step-num">5</span><h2 id="s5">Generar APK / AAB</h2></div>
+      <p class="note">En la plataforma completa, este paso compila tu app con Android SDK y Gradle y te da un APK firmado para instalar o un AAB para Google Play. Esta demo gratuita no tiene servidor, así que no puede compilar.</p>
+      <div class="row">
+        <button class="btn" disabled>Generar APK</button>
+        <button class="btn ghost" id="copy-config">Copiar configuración</button>
+        <button class="btn ghost" id="reset">Empezar de nuevo</button>
+      </div>
+    </section>
+  </div>
+
+  <aside class="stage" id="stage" aria-label="Vista previa en un móvil Android">
+    <div class="phone">
+      <div class="screen">
+        <div class="statusbar" id="statusbar"><span>9:41</span><span>5G ▮▮▮</span></div>
+        <iframe id="frame" title="Vista previa de la app"></iframe>
+        <div class="homebar"><span></span></div>
+      </div>
+    </div>
+    <p class="muted">Vista previa real: es el mismo motor que lleva la app Android. Los formularios y el registro de usuarios funcionan en modo demostración.</p>
+  </aside>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+  const KEY = "forjapp-demo-v1";
+  const S = { data: null, runtime: "", tplId: "restaurant", cfg: null, pageId: null, blockId: null, ready: false };
+  const $ = (id) => document.getElementById(id);
+  const frame = $("frame");
+
+  // ---------- helpers ----------
+  function el(tag, attrs, ...kids) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v === undefined || v === null || v === false) continue;
+      if (k === "class") n.className = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? "" : v);
+    }
+    for (const c of kids.flat()) if (c !== null && c !== undefined && c !== false) n.append(c);
+    return n;
+  }
+  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const uid = (p) => p + "_" + Math.random().toString(36).slice(2, 9);
+  let toastTimer;
+  function toast(msg) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("on"), 2200);
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify({ tplId: S.tplId, cfg: S.cfg })); } catch (e) { /* storage unavailable */ }
+  }
+  function loadSaved() {
+    try { const v = JSON.parse(localStorage.getItem(KEY) || "null"); return v && v.cfg && v.cfg.pages ? v : null; } catch (e) { return null; }
+  }
+  const page = () => S.cfg.pages.find((p) => p.id === S.pageId) || S.cfg.pages[0];
+
+  // ---------- preview frame (same runtime as the Android app) ----------
+  function demoShim() {
+    // Forms and app users have no server in this demo: answer them locally.
+    const realFetch = window.fetch.bind(window);
+    window.fetch = function (input, opts) {
+      const url = String(input);
+      if (url.indexOf("/api/public/") === -1) return realFetch(input, opts);
+      let sent = {};
+      try { sent = JSON.parse((opts && opts.body) || "{}"); } catch (e) { sent = {}; }
+      const body = url.indexOf("/auth/") !== -1 ? { token: "demo", user: { id: "demo", name: sent.name || "Usuario demo", email: sent.email || "" } } : { ok: true };
+      return new Promise((resolve) => setTimeout(() => resolve(new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } })), 350));
+    };
+  }
+  function buildFrame() {
+    const env = { apiBase: "", projectId: "demo", mode: "preview" };
+    const rt = S.runtime.replace(/<\/script/gi, "<\\/script");
+    frame.srcdoc = "<!doctype html><html lang=\"es\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">" +
+      "<script>window.FORJAPP_ENV=" + JSON.stringify(env) + ";(" + demoShim.toString() + ")();<\/script>" +
+      "<script>" + rt + "<\/script></head><body></body></html>";
+  }
+  let postTimer;
+  function push(now) {
+    clearTimeout(postTimer);
+    const send = () => {
+      if (!S.ready || !frame.contentWindow) return;
+      frame.contentWindow.postMessage({ type: "forjapp:config", config: S.cfg }, "*");
+      $("statusbar").style.background = S.cfg.theme.primary;
+      save();
+    };
+    if (now) send(); else postTimer = setTimeout(send, 120);
+  }
+  function navigatePreview() {
+    if (S.ready) frame.contentWindow.postMessage({ type: "forjapp:navigate", pageId: S.pageId }, "*");
+  }
+  function selectInPreview() {
+    if (S.ready) frame.contentWindow.postMessage({ type: "forjapp:select", blockId: S.blockId }, "*");
+  }
+  window.addEventListener("message", (e) => {
+    if (e.source !== frame.contentWindow) return;
+    const d = e.data || {};
+    if (d.source !== "forjapp-runtime") return;
+    if (d.type === "ready") { S.ready = true; push(true); navigatePreview(); }
+    if (d.type === "page-changed" && d.pageId && d.pageId !== S.pageId) { S.pageId = d.pageId; S.blockId = null; renderPages(); renderBlocks(); }
+    if (d.type === "block-click" && d.blockId) {
+      S.pageId = d.pageId; S.blockId = d.blockId; renderPages(); renderBlocks(); selectInPreview();
+      const card = document.querySelector('[data-block="' + CSS.escape(d.blockId) + '"]');
+      if (card && window.matchMedia("(min-width: 901px)").matches) card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  });
+
+  // ---------- step 1: templates ----------
+  function renderTemplates() {
+    const box = $("templates");
+    box.replaceChildren(...S.data.templates.map((t) => el("button", {
+      class: "tpl", "aria-pressed": String(t.id === S.tplId), onclick: () => loadTemplate(t.id),
+    }, el("div", { class: "sw", style: "background: linear-gradient(135deg, " + t.accent + ", " + t.config.theme.secondary + ")" }),
+       el("div", { class: "tx" }, el("strong", {}, t.name), el("span", {}, t.description)))));
+  }
+  function loadTemplate(id) {
+    const t = S.data.templates.find((x) => x.id === id);
+    if (!t) return;
+    S.tplId = id;
+    S.cfg = clone(t.config);
+    S.cfg.meta.name = t.id === "blank" ? "Mi App" : t.config.meta.name;
+    S.pageId = S.cfg.homePageId;
+    S.blockId = null;
+    renderAll();
+    push(true);
+    navigatePreview();
+    toast("Plantilla «" + t.name + "» cargada");
+  }
+
+  // ---------- step 2: design ----------
+  const HEX = /^#[0-9a-fA-F]{6}$/;
+  function renderDesign() {
+    const t = S.cfg.theme;
+    $("app-name").value = S.cfg.meta.name;
+    $("app-font").value = t.font;
+    $("c-primary").value = t.primary.toLowerCase(); $("c-primary-hex").value = t.primary;
+    $("c-secondary").value = t.secondary.toLowerCase(); $("c-secondary-hex").value = t.secondary;
+    $("app-radius").value = t.radius; $("radius-val").textContent = t.radius + " px";
+    for (const b of $("app-mode").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.mode === t.mode));
+  }
+  function setColor(key, value) {
+    if (!HEX.test(value)) return;
+    const v = value.toUpperCase();
+    S.cfg.theme[key] = v;
+    if (key === "primary") S.cfg.branding.splashColor = v;
+    $("c-" + key).value = v.toLowerCase(); $("c-" + key + "-hex").value = v;
+    push();
+  }
+  function bindDesign() {
+    $("app-font").replaceChildren(...S.data.fonts.map((f) => el("option", { value: f }, f)));
+    $("app-name").addEventListener("input", (e) => { S.cfg.meta.name = e.target.value || " "; push(); });
+    $("app-font").addEventListener("change", (e) => { S.cfg.theme.font = e.target.value; push(); });
+    for (const key of ["primary", "secondary"]) {
+      $("c-" + key).addEventListener("input", (e) => setColor(key, e.target.value));
+      $("c-" + key + "-hex").addEventListener("input", (e) => setColor(key, e.target.value.trim()));
+    }
+    $("app-radius").addEventListener("input", (e) => { S.cfg.theme.radius = Number(e.target.value); $("radius-val").textContent = e.target.value + " px"; push(); });
+    $("app-mode").addEventListener("click", (e) => {
+      const mode = e.target.dataset && e.target.dataset.mode;
+      if (!mode) return;
+      const dark = mode === "dark";
+      Object.assign(S.cfg.theme, { mode, background: dark ? "#0B0F19" : "#F8FAFC", surface: dark ? "#151B2B" : "#FFFFFF", text: dark ? "#E2E8F0" : "#0F172A" });
+      renderDesign(); push();
+    });
+  }
+
+  // ---------- step 3: pages & blocks ----------
+  function renderPages() {
+    $("pages").replaceChildren(...S.cfg.pages.map((p) => el("button", {
+      "aria-pressed": String(p.id === page().id),
+      onclick: () => { S.pageId = p.id; S.blockId = null; renderPages(); renderBlocks(); navigatePreview(); },
+    }, p.title)));
+    $("page-title").value = page().title;
+  }
+  function blockTitle(b) {
+    const m = S.data.modules[b.type];
+    return m ? m.label : b.type;
+  }
+  function renderBlocks() {
+    const p = page();
+    const list = $("blocks");
+    if (!p.blocks.length) { list.replaceChildren(el("p", { class: "muted" }, "Esta página está vacía. Añade un bloque abajo.")); return; }
+    list.replaceChildren(...p.blocks.map((b, i) => {
+      const m = S.data.modules[b.type] || { fields: [] };
+      const fields = m.fields.map((f) => {
+        const id = "f-" + b.id + "-" + f.key;
+        const input = f.type === "textarea"
+          ? el("textarea", { class: "inp", id, rows: "3", maxlength: "2000" })
+          : el("input", { class: "inp", id, maxlength: "300", type: f.type === "url" ? "url" : "text" });
+        input.value = typeof b.props[f.key] === "string" ? b.props[f.key] : "";
+        input.addEventListener("focus", () => { if (S.blockId !== b.id) { S.blockId = b.id; markSelected(); selectInPreview(); } });
+        input.addEventListener("input", () => { b.props[f.key] = input.value; push(); });
+        return el("label", { class: "f", for: id }, f.label, input);
+      });
+      return el("div", { class: "block" + (b.id === S.blockId ? " sel" : ""), "data-block": b.id },
+        el("div", { class: "block-head" },
+          el("strong", {}, blockTitle(b)),
+          el("button", { class: "icon-btn", "aria-label": "Subir", title: "Subir", disabled: i === 0, onclick: () => moveBlock(i, -1) }, "↑"),
+          el("button", { class: "icon-btn", "aria-label": "Bajar", title: "Bajar", disabled: i === p.blocks.length - 1, onclick: () => moveBlock(i, 1) }, "↓"),
+          el("button", { class: "icon-btn", "aria-label": "Eliminar", title: "Eliminar", onclick: () => removeBlock(i) }, "✕")),
+        fields.length ? fields : el("p", { class: "muted" }, b.type === "text" && b.props.text ? "" : "Este bloque no tiene textos que editar en la demo."));
+    }));
+  }
+  function markSelected() {
+    for (const c of document.querySelectorAll(".block")) c.classList.toggle("sel", c.dataset.block === S.blockId);
+  }
+  function moveBlock(i, d) {
+    const blocks = page().blocks;
+    const j = i + d;
+    if (j < 0 || j >= blocks.length) return;
+    [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
+    renderBlocks(); push(true);
+  }
+  function removeBlock(i) {
+    const [b] = page().blocks.splice(i, 1);
+    if (b && b.id === S.blockId) S.blockId = null;
+    renderBlocks(); push(true);
+    toast("Bloque «" + blockTitle(b) + "» eliminado");
+  }
+  function bindBlocks() {
+    $("add-type").replaceChildren(...S.data.addable.map((t) => el("option", { value: t }, S.data.modules[t].label + " · " + S.data.modules[t].description)));
+    $("add-block").addEventListener("click", () => {
+      const type = $("add-type").value;
+      const props = clone(S.data.modules[type].defaultProps);
+      if (type === "image") props.src = S.data.sampleImage;
+      if (type === "cards") props.items = (props.items || []).map((it) => Object.assign(it, { image: S.data.sampleImage }));
+      const b = { id: uid("b"), type, props };
+      page().blocks.push(b);
+      S.blockId = b.id;
+      renderBlocks(); push(true);
+      setTimeout(selectInPreview, 200);
+      const card = document.querySelector('[data-block="' + CSS.escape(b.id) + '"]');
+      if (card) card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    });
+    $("page-title").addEventListener("input", (e) => {
+      const p = page();
+      p.title = e.target.value || " ";
+      for (const n of S.cfg.navigation.items) if (n.pageId === p.id) n.label = p.title.slice(0, 30);
+      const btn = $("pages").querySelector('[aria-pressed="true"]');
+      if (btn) btn.textContent = p.title;
+      push();
+    });
+  }
+
+  // ---------- step 4: ads ----------
+  function renderAds() {
+    const a = S.cfg.ads || (S.cfg.ads = { enabled: false, imageUrl: "", linkUrl: "", label: "", position: "bottom" });
+    $("ad-on").checked = !!a.enabled;
+    $("ad-label").value = a.label || "";
+    $("ad-link").value = a.linkUrl || "";
+    $("ad-fields").hidden = !a.enabled;
+  }
+  function bindAds() {
+    $("ad-on").addEventListener("change", (e) => {
+      const a = S.cfg.ads;
+      a.enabled = e.target.checked;
+      if (a.enabled) {
+        a.imageUrl = a.imageUrl || S.data.sampleImage;
+        a.linkUrl = a.linkUrl || "https://ejemplo.com";
+        a.label = a.label || "Tu anuncio aquí";
+      }
+      renderAds(); push(true);
+    });
+    $("ad-label").addEventListener("input", (e) => { S.cfg.ads.label = e.target.value; push(); });
+    $("ad-link").addEventListener("input", (e) => {
+      const v = e.target.value.trim();
+      if (/^https?:\/\/\S+$/i.test(v)) { S.cfg.ads.linkUrl = v; push(); }
+    });
+  }
+
+  // ---------- step 5: export ----------
+  function bindExport() {
+    $("copy-config").addEventListener("click", () => {
+      const text = JSON.stringify(S.cfg, null, 2);
+      const fallback = () => {
+        const ta = el("textarea", { class: "hidden-copy", "aria-hidden": "true" });
+        ta.value = text; document.body.append(ta); ta.select();
+        let ok = false;
+        try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+        ta.remove();
+        toast(ok ? "Configuración copiada" : "No se pudo copiar en este navegador");
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => toast("Configuración copiada"), fallback);
+      else fallback();
+    });
+    $("reset").addEventListener("click", () => loadTemplate(S.tplId));
+  }
+
+  // ---------- phone tabs ----------
+  function bindTabs() {
+    const set = (preview) => {
+      document.body.classList.toggle("show-preview", preview);
+      $("tab-edit").setAttribute("aria-selected", String(!preview));
+      $("tab-preview").setAttribute("aria-selected", String(preview));
+      window.scrollTo({ top: 0 });
+    };
+    $("tab-edit").addEventListener("click", () => set(false));
+    $("tab-preview").addEventListener("click", () => set(true));
+  }
+
+  function renderAll() { renderTemplates(); renderDesign(); renderPages(); renderBlocks(); renderAds(); }
+
+  async function start() {
+    try {
+      S.data = JSON.parse(document.getElementById("forjapp-data").textContent);
+      S.runtime = document.getElementById("forjapp-runtime").textContent;
+    } catch (e) {
+      document.getElementById("panel").prepend(el("p", { class: "note" }, "No se pudieron cargar las plantillas. Recarga la página."));
+      return;
+    }
+    bindDesign(); bindBlocks(); bindAds(); bindExport(); bindTabs();
+    const saved = loadSaved();
+    if (saved) {
+      S.tplId = saved.tplId; S.cfg = saved.cfg;
+      if (!S.cfg.ads) S.cfg.ads = { enabled: false, imageUrl: "", linkUrl: "", label: "", position: "bottom" };
+      S.pageId = S.cfg.homePageId;
+    } else {
+      const t = S.data.templates.find((x) => x.id === "restaurant") || S.data.templates[0];
+      S.tplId = t.id; S.cfg = clone(t.config); S.pageId = S.cfg.homePageId;
+    }
+    renderAll();
+    $("statusbar").style.background = S.cfg.theme.primary;
+    buildFrame();
+  }
+  // The embedded data sits after this script: wait until the whole page is parsed.
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
+})();
+</script>
+<!-- Embedded data: the six templates and the app runtime (the same engine that ships inside the APK). -->
+<script type="application/json" id="forjapp-data">{"templates":[{"id":"blank","name":"App en blanco","description":"Empieza desde cero con una sola página.","accent":"#6D28D9","config":{"schemaVersion":1,"meta":{"name":"Mi App","description":"","packageName":"com.forjapp.miapp","versionCode":1,"versionName":"1.0.0","orientation":"portrait","permissions":[]},"theme":{"mode":"light","primary":"#6D28D9","secondary":"#F59E0B","background":"#F8FAFC","surface":"#FFFFFF","text":"#0F172A","font":"Inter","radius":14},"branding":{"splashColor":"#6D28D9"},"navigation":{"type":"none","items":[{"id":"nav_home","label":"Inicio","icon":"home","pageId":"home"}]},"homePageId":"home","pages":[{"id":"home","title":"Inicio","icon":"home","hideHeader":false,"blocks":[{"id":"b1","type":"heading","props":{"text":"Hola 👋","size":"lg","align":"left"}},{"id":"b2","type":"text","props":{"text":"Esta es la primera página de tu app. Añade bloques desde el editor.","align":"left"}}]}],"ads":{"enabled":false,"imageUrl":"","linkUrl":"","label":"","position":"bottom"},"integrations":{"push":{"enabled":false}}}},{"id":"store","name":"Tienda online","description":"Catálogo de productos, ofertas, pedidos y contacto.","accent":"#059669","config":{"schemaVersion":1,"meta":{"name":"Mi Tienda","description":"","packageName":"com.forjapp.miapp","versionCode":1,"versionName":"1.0.0","orientation":"portrait","permissions":[]},"theme":{"mode":"light","primary":"#059669","secondary":"#F97316","background":"#F8FAFC","surface":"#FFFFFF","text":"#0F172A","font":"Inter","radius":14},"branding":{"splashColor":"#059669"},"navigation":{"type":"bottom","items":[{"id":"nav_home","label":"Tienda","icon":"bag","pageId":"home"},{"id":"nav_catalog","label":"Catálogo","icon":"grid","pageId":"catalog"},{"id":"nav_order","label":"Pedidos","icon":"form","pageId":"order"},{"id":"nav_contact","label":"Contacto","icon":"phone","pageId":"contact"}]},"homePageId":"home","pages":[{"id":"home","title":"Tienda","icon":"bag","hideHeader":false,"blocks":[{"id":"b1","type":"hero","props":{"title":"Rebajas de temporada","subtitle":"Hasta -40% en productos seleccionados","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23059669%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F97316%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22251%22%20cy%3D%22-115%22%20r%3D%22-45%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22549%22%20cy%3D%22615%22%20r%3D%22-22.5%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","buttonLabel":"Ver catálogo","buttonPage":"catalog"}},{"id":"b2","type":"heading","props":{"text":"Novedades","size":"md","align":"left"}},{"id":"b3","type":"cards","props":{"layout":"grid","items":[{"title":"Zapatillas","text":"Cómodas y ligeras","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23059669%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F97316%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22161%22%20cy%3D%2267%22%20r%3D%2257%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22639%22%20cy%3D%22433%22%20r%3D%2228.5%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","price":"59,90 €","url":""},{"title":"Mochila","text":"Resistente al agua","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23059669%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F97316%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22561%22%20cy%3D%22-88%22%20r%3D%2284%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22239%22%20cy%3D%22588%22%20r%3D%2242%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","price":"34,90 €","url":""}]}}]},{"id":"catalog","title":"Catálogo","icon":"grid","hideHeader":false,"blocks":[{"id":"b4","type":"search","props":{"placeholder":"Buscar productos…"}},{"id":"b5","type":"cards","props":{"layout":"grid","items":[{"title":"Camiseta","text":"100% algodón","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23059669%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F97316%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22231%22%20cy%3D%22236%22%20r%3D%22140%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22569%22%20cy%3D%22264%22%20r%3D%2270%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","price":"19,90 €","url":""},{"title":"Gorra","text":"Talla única","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23059669%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F97316%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22459%22%20cy%3D%22-166%22%20r%3D%2232%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22341%22%20cy%3D%22666%22%20r%3D%2216%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","price":"14,90 €","url":""}]}}]},{"id":"order","title":"Pedidos","icon":"form","hideHeader":false,"blocks":[{"id":"b6","type":"form","props":{"title":"Haz tu pedido","submitLabel":"Enviar","successMessage":"¡Gracias! Hemos recibido tu mensaje.","fields":[{"label":"Nombre","kind":"text","required":true},{"label":"Teléfono","kind":"tel","required":true},{"label":"Productos","kind":"textarea","required":true}]}}]},{"id":"contact","title":"Contacto","icon":"phone","hideHeader":false,"blocks":[{"id":"b7","type":"contact","props":{"phone":"+34900000000","email":"tienda@example.com","whatsapp":"","address":"","hours":""}}]}],"ads":{"enabled":false,"imageUrl":"","linkUrl":"","label":"","position":"bottom"},"integrations":{"push":{"enabled":false}}}},{"id":"restaurant","name":"Restaurante","description":"Carta, reservas, fotos, ubicación y contacto.","accent":"#B45309","config":{"schemaVersion":1,"meta":{"name":"Mi Restaurante","description":"","packageName":"com.forjapp.miapp","versionCode":1,"versionName":"1.0.0","orientation":"portrait","permissions":[]},"theme":{"mode":"light","primary":"#B45309","secondary":"#16A34A","background":"#FFFBF5","surface":"#FFFFFF","text":"#0F172A","font":"Lora","radius":14},"branding":{"splashColor":"#B45309"},"navigation":{"type":"bottom","items":[{"id":"nav_home","label":"Inicio","icon":"home","pageId":"home"},{"id":"nav_menu","label":"Carta","icon":"menu","pageId":"menu"},{"id":"nav_booking","label":"Reservas","icon":"calendar","pageId":"booking"},{"id":"nav_photos","label":"Fotos","icon":"images","pageId":"photos"},{"id":"nav_location","label":"Dónde","icon":"map","pageId":"location"}]},"homePageId":"home","pages":[{"id":"home","title":"Inicio","icon":"home","hideHeader":false,"blocks":[{"id":"b1","type":"hero","props":{"title":"Cocina mediterránea","subtitle":"Producto fresco, cada día","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23B45309%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2316A34A%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22386%22%20cy%3D%22248%22%20r%3D%22224%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22414%22%20cy%3D%22252%22%20r%3D%22112%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","buttonLabel":"Reservar mesa","buttonPage":"booking"}},{"id":"b2","type":"text","props":{"text":"Bienvenido a nuestro restaurante.","align":"left"}}]},{"id":"menu","title":"Carta","icon":"menu","hideHeader":false,"blocks":[{"id":"b3","type":"cards","props":{"layout":"list","items":[{"title":"Paella valenciana","text":"Para 2 personas","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23B45309%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2316A34A%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22146%22%20cy%3D%22169%22%20r%3D%2294%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22654%22%20cy%3D%22331%22%20r%3D%2247%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","price":"28,00 €","url":""},{"title":"Ensalada de la casa","text":"Con productos de temporada","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23B45309%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2316A34A%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22282%22%20cy%3D%22311%22%20r%3D%22183%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22518%22%20cy%3D%22189%22%20r%3D%2291.5%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","price":"11,50 €","url":""}]}}]},{"id":"booking","title":"Reservas","icon":"calendar","hideHeader":false,"blocks":[{"id":"b4","type":"form","props":{"title":"Reserva tu mesa","submitLabel":"Reservar","successMessage":"¡Reserva recibida! Te confirmaremos por teléfono.","fields":[{"label":"Nombre","kind":"text","required":true},{"label":"Teléfono","kind":"tel","required":true},{"label":"Fecha","kind":"date","required":true},{"label":"Personas","kind":"number","required":true}]}}]},{"id":"photos","title":"Fotos","icon":"images","hideHeader":false,"blocks":[{"id":"b5","type":"gallery","props":{"columns":2,"images":[{"src":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23B45309%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2316A34A%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22604%22%20cy%3D%2264%22%20r%3D%2271%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22196%22%20cy%3D%22436%22%20r%3D%2235.5%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","caption":""},{"src":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23B45309%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2316A34A%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22461%22%20cy%3D%22391%22%20r%3D%22227%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22339%22%20cy%3D%22109%22%20r%3D%22113.5%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","caption":""},{"src":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23B45309%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2316A34A%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22574%22%20cy%3D%22-218%22%20r%3D%2288%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22226%22%20cy%3D%22718%22%20r%3D%2244%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","caption":""},{"src":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23B45309%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2316A34A%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22431%22%20cy%3D%22-147%22%20r%3D%2288%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22369%22%20cy%3D%22647%22%20r%3D%2244%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","caption":""}]}}]},{"id":"location","title":"Dónde","icon":"map","hideHeader":false,"blocks":[{"id":"b6","type":"text","props":{"text":"[Mapa] Mapa con tu ubicación y botón «Cómo llegar». Disponible en la app instalada.","align":"center"}},{"id":"b7","type":"contact","props":{"phone":"+34910000000","email":"","whatsapp":"","address":"Calle Mayor 1, Madrid","hours":"Mar-Dom 13:00-16:00 / 20:00-23:30"}}]}],"ads":{"enabled":false,"imageUrl":"","linkUrl":"","label":"","position":"bottom"},"integrations":{"push":{"enabled":false}}}},{"id":"education","name":"Academia","description":"Cursos, lecciones en vídeo, alumnos y contacto.","accent":"#2563EB","config":{"schemaVersion":1,"meta":{"name":"Mi Academia","description":"","packageName":"com.forjapp.miapp","versionCode":1,"versionName":"1.0.0","orientation":"portrait","permissions":[]},"theme":{"mode":"light","primary":"#2563EB","secondary":"#10B981","background":"#F8FAFC","surface":"#FFFFFF","text":"#0F172A","font":"Nunito","radius":14},"branding":{"splashColor":"#2563EB"},"navigation":{"type":"bottom","items":[{"id":"nav_courses","label":"Cursos","icon":"book","pageId":"courses"},{"id":"nav_lessons","label":"Lecciones","icon":"video","pageId":"lessons"},{"id":"nav_account","label":"Mi cuenta","icon":"user","pageId":"account"},{"id":"nav_contact","label":"Contacto","icon":"phone","pageId":"contact"}]},"homePageId":"courses","pages":[{"id":"courses","title":"Cursos","icon":"book","hideHeader":false,"blocks":[{"id":"b1","type":"hero","props":{"title":"Aprende a tu ritmo","subtitle":"Cursos online con certificado","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%232563EB%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2310B981%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22306%22%20cy%3D%22189%22%20r%3D%22158%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22494%22%20cy%3D%22311%22%20r%3D%2279%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","buttonLabel":"","buttonPage":""}},{"id":"b2","type":"cards","props":{"layout":"list","items":[{"title":"Inglés B1","text":"40 lecciones","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%232563EB%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2310B981%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22409%22%20cy%3D%22-158%22%20r%3D%22-33%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22391%22%20cy%3D%22658%22%20r%3D%22-16.5%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","price":"Nuevo","url":""},{"title":"Programación","text":"Desde cero","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%232563EB%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%2310B981%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22210%22%20cy%3D%22149%22%20r%3D%22149%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22590%22%20cy%3D%22351%22%20r%3D%2274.5%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","price":"","url":""}]}}]},{"id":"lessons","title":"Lecciones","icon":"video","hideHeader":false,"blocks":[{"id":"b3","type":"text","props":{"text":"[Vídeo] Reproductor de vídeo (YouTube, Vimeo o MP4). Disponible en la app instalada.","align":"center"}}]},{"id":"account","title":"Mi cuenta","icon":"user","hideHeader":false,"blocks":[{"id":"b4","type":"auth","props":{"welcomeText":"Accede a tu cuenta","allowRegister":true}}]},{"id":"contact","title":"Contacto","icon":"phone","hideHeader":false,"blocks":[{"id":"b5","type":"form","props":{"title":"Solicita información","submitLabel":"Enviar","successMessage":"¡Gracias! Hemos recibido tu mensaje.","fields":[{"label":"Nombre","kind":"text","required":true},{"label":"Email","kind":"email","required":true},{"label":"Mensaje","kind":"textarea","required":false}]}}]}],"ads":{"enabled":false,"imageUrl":"","linkUrl":"","label":"","position":"bottom"},"integrations":{"push":{"enabled":false}}}},{"id":"community","name":"Comunidad","description":"Noticias, eventos, miembros y redes sociales.","accent":"#0891B2","config":{"schemaVersion":1,"meta":{"name":"Mi Comunidad","description":"","packageName":"com.forjapp.miapp","versionCode":1,"versionName":"1.0.0","orientation":"portrait","permissions":[]},"theme":{"mode":"light","primary":"#0891B2","secondary":"#E11D48","background":"#F8FAFC","surface":"#FFFFFF","text":"#0F172A","font":"Inter","radius":14},"branding":{"splashColor":"#0891B2"},"navigation":{"type":"bottom","items":[{"id":"nav_home","label":"Inicio","icon":"home","pageId":"home"},{"id":"nav_events","label":"Eventos","icon":"calendar","pageId":"events"},{"id":"nav_members","label":"Miembros","icon":"user","pageId":"members"},{"id":"nav_social","label":"Redes","icon":"share","pageId":"social"}]},"homePageId":"home","pages":[{"id":"home","title":"Inicio","icon":"home","hideHeader":false,"blocks":[{"id":"b1","type":"hero","props":{"title":"Únete a la comunidad","subtitle":"Descubre todo lo que tenemos para ti","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%230891B2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23E11D48%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22290%22%20cy%3D%2286%22%20r%3D%22107%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22510%22%20cy%3D%22414%22%20r%3D%2253.5%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","buttonLabel":"","buttonPage":""}},{"id":"b2","type":"text","props":{"text":"Un espacio para compartir, aprender y conectar.","align":"left"}}]},{"id":"events","title":"Eventos","icon":"calendar","hideHeader":false,"blocks":[{"id":"b3","type":"cards","props":{"layout":"list","items":[{"title":"Quedada mensual","text":"Sábado 18:00","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%230891B2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23E11D48%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22147%22%20cy%3D%2260%22%20r%3D%2236%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22653%22%20cy%3D%22440%22%20r%3D%2218%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","price":"Gratis","url":""}]}}]},{"id":"members","title":"Miembros","icon":"user","hideHeader":false,"blocks":[{"id":"b4","type":"auth","props":{"welcomeText":"Accede como miembro","allowRegister":true}}]},{"id":"social","title":"Redes","icon":"share","hideHeader":false,"blocks":[{"id":"b5","type":"social","props":{"links":[{"network":"instagram","url":"https://instagram.com/"}]}}]}],"ads":{"enabled":false,"imageUrl":"","linkUrl":"","label":"","position":"bottom"},"integrations":{"push":{"enabled":false}}}},{"id":"business","name":"Empresa","description":"Servicios, equipo, presupuestos y ubicación.","accent":"#0F172A","config":{"schemaVersion":1,"meta":{"name":"Mi Empresa","description":"","packageName":"com.forjapp.miapp","versionCode":1,"versionName":"1.0.0","orientation":"portrait","permissions":[]},"theme":{"mode":"light","primary":"#0F172A","secondary":"#3B82F6","background":"#F8FAFC","surface":"#FFFFFF","text":"#0F172A","font":"Inter","radius":14},"branding":{"splashColor":"#0F172A"},"navigation":{"type":"drawer","items":[{"id":"nav_home","label":"Inicio","icon":"home","pageId":"home"},{"id":"nav_services","label":"Servicios","icon":"briefcase","pageId":"services"},{"id":"nav_quote","label":"Presupuesto","icon":"form","pageId":"quote"},{"id":"nav_contact","label":"Contacto","icon":"phone","pageId":"contact"}]},"homePageId":"home","pages":[{"id":"home","title":"Inicio","icon":"home","hideHeader":false,"blocks":[{"id":"b1","type":"hero","props":{"title":"Soluciones para tu negocio","subtitle":"Más de 10 años de experiencia","image":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%230F172A%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%233B82F6%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22561%22%20cy%3D%2275%22%20r%3D%2240%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22239%22%20cy%3D%22425%22%20r%3D%2220%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E","buttonLabel":"Pedir presupuesto","buttonPage":"quote"}}]},{"id":"services","title":"Servicios","icon":"briefcase","hideHeader":false,"blocks":[{"id":"b2","type":"cards","props":{"layout":"list","items":[{"title":"Consultoría","text":"Analizamos tu negocio","image":"","price":"","url":""},{"title":"Desarrollo","text":"Software a medida","image":"","price":"","url":""}]}}]},{"id":"quote","title":"Presupuesto","icon":"form","hideHeader":false,"blocks":[{"id":"b3","type":"form","props":{"title":"Solicita presupuesto","submitLabel":"Enviar","successMessage":"¡Gracias! Hemos recibido tu mensaje.","fields":[{"label":"Nombre","kind":"text","required":true},{"label":"Email","kind":"email","required":true},{"label":"Mensaje","kind":"textarea","required":false}]}}]},{"id":"contact","title":"Contacto","icon":"phone","hideHeader":false,"blocks":[{"id":"b4","type":"contact","props":{"phone":"+34900000000","email":"info@example.com","whatsapp":"","address":"Madrid","hours":""}},{"id":"b5","type":"text","props":{"text":"[Mapa] Mapa con tu ubicación y botón «Cómo llegar». Disponible en la app instalada.","align":"center"}}]}],"ads":{"enabled":false,"imageUrl":"","linkUrl":"","label":"","position":"bottom"},"integrations":{"push":{"enabled":false}}}}],"modules":{"hero":{"label":"Portada","description":"Cabecera grande con imagen de fondo, título y botón.","defaultProps":{"title":"Bienvenido","subtitle":"Descubre todo lo que tenemos para ti","image":"","buttonLabel":"","buttonPage":""},"fields":[{"key":"title","label":"Título","type":"text"},{"key":"subtitle","label":"Subtítulo","type":"textarea"},{"key":"buttonLabel","label":"Texto del botón","type":"text"}]},"heading":{"label":"Título","description":"Encabezado de sección.","defaultProps":{"text":"Nuevo título","size":"md","align":"left"},"fields":[{"key":"text","label":"Texto","type":"text"}]},"text":{"label":"Texto","description":"Párrafo de texto.","defaultProps":{"text":"Escribe aquí tu contenido.","align":"left"},"fields":[{"key":"text","label":"Contenido","type":"textarea"}]},"image":{"label":"Imagen","description":"Imagen con pie de foto opcional.","defaultProps":{"src":"","caption":"","rounded":true},"fields":[{"key":"caption","label":"Pie de foto","type":"text"}]},"button":{"label":"Botón","description":"Botón que abre una página, un enlace, un teléfono o un correo.","defaultProps":{"label":"Pulsa aquí","action":"page","page":"","target":"","variant":"filled"},"fields":[{"key":"label","label":"Texto","type":"text"},{"key":"target","label":"Enlace / teléfono / email","type":"text"}]},"link":{"label":"Enlace","description":"Enlace de texto a una web externa.","defaultProps":{"label":"Visita nuestra web","url":"https://example.com"},"fields":[{"key":"label","label":"Texto","type":"text"},{"key":"url","label":"URL","type":"url"}]},"cards":{"label":"Tarjetas","description":"Lista de tarjetas con imagen, título, texto y precio (menús, productos, cursos…).","defaultProps":{"layout":"list","items":[{"title":"Elemento 1","text":"Descripción","image":"","price":"","url":""}]},"fields":[]},"spacer":{"label":"Espacio","description":"Espacio vertical en blanco.","defaultProps":{"height":24},"fields":[]},"divider":{"label":"Separador","description":"Línea horizontal.","defaultProps":{},"fields":[]},"gallery":{"label":"Galería","description":"Galería de imágenes con visor a pantalla completa.","defaultProps":{"columns":2,"images":[]},"fields":[]},"video":{"label":"Vídeo","description":"Reproductor de vídeo (YouTube, Vimeo o archivo MP4).","defaultProps":{"url":"","title":"","autoplay":false},"fields":[{"key":"url","label":"URL del vídeo","type":"url"},{"key":"title","label":"Título","type":"text"}]},"radio":{"label":"Radio en directo","description":"Reproductor de radio por streaming (MP3/AAC/HLS).","defaultProps":{"streamUrl":"","stationName":"Mi Radio","cover":"","slogan":"En directo 24/7"},"fields":[{"key":"streamUrl","label":"URL del stream","type":"url"},{"key":"stationName","label":"Nombre de la emisora","type":"text"},{"key":"slogan","label":"Eslogan","type":"text"}]},"playlist":{"label":"Música","description":"Lista de pistas de audio reproducibles.","defaultProps":{"title":"Mi música","tracks":[]},"fields":[{"key":"title","label":"Título","type":"text"}]},"rss":{"label":"Noticias RSS","description":"Muestra noticias de un feed RSS/Atom con lectura y favoritos.","defaultProps":{"feedUrl":"","limit":10,"showImages":true},"fields":[{"key":"feedUrl","label":"URL del feed RSS","type":"url"}]},"webview":{"label":"Navegador web","description":"Muestra una página web dentro de la app.","defaultProps":{"url":"https://example.com","height":0},"fields":[{"key":"url","label":"URL","type":"url"}]},"form":{"label":"Formulario","description":"Formulario personalizable. Las respuestas se guardan en tu panel.","defaultProps":{"title":"Contacta con nosotros","submitLabel":"Enviar","successMessage":"¡Gracias! Hemos recibido tu mensaje.","fields":[{"label":"Nombre","kind":"text","required":true},{"label":"Email","kind":"email","required":true},{"label":"Mensaje","kind":"textarea","required":false}]},"fields":[{"key":"title","label":"Título","type":"text"},{"key":"submitLabel","label":"Texto del botón","type":"text"},{"key":"successMessage","label":"Mensaje de confirmación","type":"text"}]},"contact":{"label":"Contacto","description":"Botones de llamada, email, WhatsApp y dirección.","defaultProps":{"phone":"","email":"","whatsapp":"","address":"","hours":""},"fields":[{"key":"phone","label":"Teléfono","type":"text"},{"key":"email","label":"Email","type":"text"},{"key":"whatsapp","label":"WhatsApp (con prefijo)","type":"text"},{"key":"address","label":"Dirección","type":"text"},{"key":"hours","label":"Horario","type":"textarea"}]},"map":{"label":"Mapa","description":"Mapa con la ubicación del negocio y botón para cómo llegar.","defaultProps":{"lat":40.4168,"lng":-3.7038,"zoom":15,"label":"Nuestra ubicación"},"fields":[{"key":"label","label":"Nombre del lugar","type":"text"}]},"social":{"label":"Redes sociales","description":"Enlaces a tus redes sociales.","defaultProps":{"links":[{"network":"instagram","url":"https://instagram.com/"}]},"fields":[]},"favorites":{"label":"Favoritos","description":"Lista de contenidos marcados como favoritos por el usuario.","defaultProps":{"emptyText":"Aún no tienes favoritos."},"fields":[{"key":"emptyText","label":"Texto si no hay favoritos","type":"text"}]},"search":{"label":"Buscador","description":"Buscador interno de páginas, textos y noticias de la app.","defaultProps":{"placeholder":"Buscar en la app…"},"fields":[{"key":"placeholder","label":"Texto de ayuda","type":"text"}]},"auth":{"label":"Usuarios","description":"Registro e inicio de sesión de usuarios de tu app.","defaultProps":{"welcomeText":"Accede a tu cuenta","allowRegister":true},"fields":[{"key":"welcomeText","label":"Texto de bienvenida","type":"text"}]},"push":{"label":"Notificaciones push","description":"Suscripción a notificaciones push (requiere configurar Firebase).","defaultProps":{"title":"Notificaciones","text":"Activa las notificaciones para no perderte nada."},"fields":[{"key":"title","label":"Título","type":"text"},{"key":"text","label":"Texto","type":"textarea"}]}},"addable":["heading","text","button","image","cards","contact","form","social","spacer","divider"],"fonts":["Inter","Roboto","Poppins","Merriweather","Montserrat","Lora","Nunito","Playfair Display"],"sampleImage":"data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20500%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%236D28D9%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23F59E0B%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22800%22%20height%3D%22500%22%20fill%3D%22url(%23g)%22%2F%3E%3Ccircle%20cx%3D%22266%22%20cy%3D%22263%22%20r%3D%22177%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.18%22%2F%3E%3Ccircle%20cx%3D%22534%22%20cy%3D%22237%22%20r%3D%2288.5%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.12%22%2F%3E%3C%2Fsvg%3E"}</script>
+<script type="text/plain" id="forjapp-runtime">"use strict";(()=>{function n(e,t={},...r){let i=document.createElement(e);for(let[a,o]of Object.entries(t))o==null||o===!1||(a==="class"?i.className=String(o):a==="style"&&typeof o=="object"?Object.assign(i.style,o):a.startsWith("on")&&typeof o=="function"?i.addEventListener(a.slice(2).toLowerCase(),o):a==="dataset"&&typeof o=="object"?Object.assign(i.dataset,o):i.setAttribute(a,o===!0?"":String(o)));e==="img"&&i.addEventListener("error",()=>i.style.visibility="hidden",{once:!0});for(let a of r.flat())a==null||a===!1||i.appendChild(typeof a=="string"?document.createTextNode(a):a);return i}function s(e,t=""){return typeof e=="string"?e:typeof e=="number"?String(e):t}function A(e,t){let r=typeof e=="number"?e:typeof e=="string"?parseFloat(e):NaN;return Number.isFinite(r)?r:t}function T(e){return Array.isArray(e)?e:[]}var W={home:"M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z",newspaper:"M4 5h13v14H6a2 2 0 0 1-2-2zM17 8h3v9a2 2 0 0 1-2 2M7 8h7M7 12h7M7 16h4",search:"M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14zM20 20l-4-4",heart:"M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z",globe:"M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18zM3 12h18M12 3c2.5 2.7 3.5 5.7 3.5 9s-1 6.3-3.5 9c-2.5-2.7-3.5-5.7-3.5-9s1-6.3 3.5-9z",radio:"M4 9h16v11H4zM7 9l10-5M8 14.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0M14 13h3M14 16h3",calendar:"M4 6h16v14H4zM4 10h16M8 3v4M16 3v4",share:"M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4",music:"M9 18V5l11-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM20 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z",video:"M3 6h13v12H3zM16 10l5-3v10l-5-3",images:"M3 5h18v14H3zM3 16l5-5 4 4 3-3 6 6M15.5 8.5h.01",info:"M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18zM12 11v6M12 7.5h.01",bag:"M5 8h14l-1 13H6zM9 8V6a3 3 0 0 1 6 0v2",grid:"M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",form:"M6 3h12v18H6zM9 8h6M9 12h6M9 16h3",phone:"M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2",menu:"M4 6h16M4 12h16M4 18h16",map:"M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21zM12 7a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z",book:"M4 4h6a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H4zM20 4h-6a2 2 0 0 0-2 2v14a2 2 0 0 1 2-2h6z",user:"M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0",briefcase:"M3 7h18v13H3zM8 7V4h8v3M3 12h18",file:"M6 3h8l4 4v14H6zM14 3v4h4",circle:"M12 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16z",star:"M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z",bell:"M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4",settings:"M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1",mail:"M3 5h18v14H3zM3 6l9 7 9-7",cart:"M3 4h2l2.5 11h11L21 7H6.2M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z",back:"M15 5l-7 7 7 7",play:"M7 4l13 8-13 8z",pause:"M7 4h4v16H7zM13 4h4v16h-4z",close:"M6 6l12 12M18 6 6 18",external:"M14 4h6v6M20 4l-9 9M18 14v6H4V6h6",whatsapp:"M4 20l1.3-4A8 8 0 1 1 8 18.7zM9 9c0 3 3 6 6 6l1-1.5-2-1-1 1a4 4 0 0 1-2.5-2.5l1-1-1-2z",instagram:"M4 4h16v16H4zM12 8.5a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7zM17 7h.01",facebook:"M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z",x:"M4 4l16 16M20 4 4 20",tiktok:"M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5M14 3a5 5 0 0 0 5 5",youtube:"M3 7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM10 9l5 3-5 3z",linkedin:"M4 9h4v11H4zM6 4a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM11 9h4v2a4 4 0 0 1 6 3v6h-4v-6a2 2 0 0 0-4 0v6h-2z",telegram:"M21 4 3 11l6 2 2 6 3-4 5 4z",web:"M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18zM3 12h18"};function u(e,t=22){let r="http://www.w3.org/2000/svg",i=document.createElementNS(r,"svg");i.setAttribute("viewBox","0 0 24 24"),i.setAttribute("width",String(t)),i.setAttribute("height",String(t)),i.setAttribute("fill","none"),i.setAttribute("stroke","currentColor"),i.setAttribute("stroke-width","1.8"),i.setAttribute("stroke-linecap","round"),i.setAttribute("stroke-linejoin","round"),i.setAttribute("aria-hidden","true");let a=document.createElementNS(r,"path");return a.setAttribute("d",W[e]??W.circle),i.appendChild(a),i}function ce(e){let t=parseInt(e.slice(1),16);return[t>>16&255,t>>8&255,t&255]}function de(e){let[t,r,i]=ce(e);return(.299*t+.587*r+.114*i)/255>.6?"#111827":"#FFFFFF"}var G={Inter:"Inter, system-ui, sans-serif",Roboto:"Roboto, system-ui, sans-serif",Poppins:"Poppins, system-ui, sans-serif",Merriweather:"Merriweather, Georgia, serif",Montserrat:"Montserrat, system-ui, sans-serif",Lora:"Lora, Georgia, serif",Nunito:"Nunito, system-ui, sans-serif","Playfair Display":"'Playfair Display', Georgia, serif"};function J(e){let t=e.theme;return`:root{--p:${t.primary};--on-p:${de(t.primary)};--s:${t.secondary};--bg:${t.background};--sf:${t.surface};--tx:${t.text};--r:${t.radius}px;--font:${G[t.font]??G.Inter}}`}var K=`
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font-family:var(--font);font-size:15px;line-height:1.5}
+#app{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--p);color:var(--on-p);min-height:56px;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.topbar h1{font-size:18px;margin:0;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar img.logo{height:30px;width:30px;object-fit:contain;border-radius:8px}
+.iconbtn{background:none;border:0;color:inherit;padding:6px;border-radius:50%;display:flex;cursor:pointer}
+.iconbtn:active{background:rgba(255,255,255,.2)}
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+main.full{display:flex;flex-direction:column}
+.page{padding:14px;display:flex;flex-direction:column;gap:14px;animation:fade .25s ease}
+.page.flush{padding:0;flex:1}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tabbar{display:flex;background:var(--sf);border-top:1px solid rgba(127,127,127,.18);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.tabbar button{flex:1;background:none;border:0;padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--tx);opacity:.55;font:inherit;font-size:11px;cursor:pointer}
+.tabbar button.on{color:var(--p);opacity:1;font-weight:600}
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;animation:fadein .2s}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:78%;max-width:300px;background:var(--sf);z-index:21;display:flex;flex-direction:column;animation:slide .22s ease}
+.drawer header{background:var(--p);color:var(--on-p);padding:28px 18px 18px;font-weight:700;font-size:18px;display:flex;gap:10px;align-items:center}
+.drawer button{display:flex;gap:14px;align-items:center;padding:14px 18px;background:none;border:0;color:var(--tx);font:inherit;text-align:left;cursor:pointer}
+.drawer button.on{color:var(--p);font-weight:600;background:rgba(127,127,127,.08)}
+@keyframes slide{from{transform:translateX(-100%)}to{transform:none}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+h2.hd{margin:0;line-height:1.25}
+.hd.lg{font-size:26px}.hd.md{font-size:20px}.hd.sm{font-size:16px}
+p.tx{margin:0;white-space:pre-wrap}
+.card{background:var(--sf);border-radius:var(--r);box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden}
+.img{width:100%;display:block;object-fit:cover;background:rgba(127,127,127,.15)}
+.rounded{border-radius:var(--r)}
+.caption{font-size:13px;opacity:.7;margin-top:6px}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;border-radius:var(--r);padding:12px 18px;font:inherit;font-weight:600;cursor:pointer;border:2px solid var(--p);width:100%}
+.btn.filled{background:var(--p);color:var(--on-p)}
+.btn.outline{background:transparent;color:var(--p)}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.6}
+a.lnk{color:var(--p);font-weight:600;display:inline-flex;gap:6px;align-items:center;text-decoration:none;cursor:pointer}
+.hero{position:relative;border-radius:var(--r);overflow:hidden;min-height:190px;display:flex;align-items:flex-end;background:linear-gradient(135deg,var(--p),var(--s));color:#fff}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero .ov{position:relative;padding:18px;width:100%;background:linear-gradient(transparent,rgba(0,0,0,.65));display:flex;flex-direction:column;gap:8px}
+.hero h2{margin:0;font-size:24px}.hero p{margin:0;opacity:.9}
+.hero .btn{width:auto;align-self:flex-start;background:var(--s);border-color:var(--s);color:#fff}
+.cards.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cards.list{display:flex;flex-direction:column;gap:12px}
+.cards.list .card{display:flex}
+.cards.list .card .img{width:96px;height:96px;flex-shrink:0}
+.cards.grid .card .img{height:110px}
+.card .body{padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.card .t{font-weight:600}.card .d{font-size:13px;opacity:.7}
+.card .pr{color:var(--p);font-weight:700;font-size:14px}
+.gal{display:grid;gap:6px}
+.gal img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:calc(var(--r)/2);cursor:pointer}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:30;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff}
+.lightbox img{max-width:100%;max-height:80%}
+.lightbox .iconbtn{position:absolute;top:12px;right:12px}
+.vid{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:var(--r);overflow:hidden}
+.vid iframe,.vid video{position:absolute;inset:0;width:100%;height:100%;border:0}
+.radio{display:flex;flex-direction:column;align-items:center;gap:14px;padding:26px 16px;text-align:center}
+.radio img{width:200px;height:200px;border-radius:24px;object-fit:cover;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.radio .play{width:78px;height:78px;border-radius:50%;border:0;background:var(--p);color:var(--on-p);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.radio .st{font-size:22px;font-weight:700}.radio .sl{opacity:.7}
+.eq{display:flex;gap:3px;height:18px;align-items:flex-end}.eq i{width:4px;background:var(--p);animation:eq 1s infinite ease-in-out}
+.eq i:nth-child(2){animation-delay:.2s}.eq i:nth-child(3){animation-delay:.4s}.eq i:nth-child(4){animation-delay:.6s}
+@keyframes eq{0%,100%{height:4px}50%{height:18px}}
+.track{display:flex;align-items:center;gap:12px;padding:10px;cursor:pointer}
+.track img,.track .ph{width:48px;height:48px;border-radius:10px;object-fit:cover;background:rgba(127,127,127,.2);flex-shrink:0}
+.track.on{background:rgba(127,127,127,.1)}
+.rss-item{display:flex;gap:12px;padding:10px;cursor:pointer;align-items:flex-start}
+.rss-item img{width:88px;height:66px;object-fit:cover;border-radius:10px;flex-shrink:0}
+.rss-item .t{font-weight:600;font-size:14px;line-height:1.3}
+.rss-item .m{font-size:12px;opacity:.6;margin-top:4px}
+.fav{background:none;border:0;color:var(--p);cursor:pointer;padding:4px;flex-shrink:0}
+.fav.on svg{fill:currentColor}
+.article{display:flex;flex-direction:column;gap:12px}
+.article h2{margin:0;font-size:21px;line-height:1.3}
+.muted{opacity:.6;font-size:13px}
+.center{text-align:center;padding:30px 10px;opacity:.7}
+.spinner{width:28px;height:28px;border:3px solid rgba(127,127,127,.25);border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite;margin:20px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.web{width:100%;border:0;background:#fff;border-radius:var(--r)}
+.page.flush .web{border-radius:0;flex:1;height:100%}
+.webwrap{display:flex;flex-direction:column;gap:6px;flex:1}
+form.frm{display:flex;flex-direction:column;gap:12px}
+.frm label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600}
+.frm input,.frm textarea,.inp{font:inherit;padding:11px 12px;border-radius:calc(var(--r)*.7);border:1px solid rgba(127,127,127,.35);background:var(--sf);color:var(--tx);width:100%}
+.frm input:focus,.frm textarea:focus,.inp:focus{outline:2px solid var(--p);border-color:transparent}
+.msg{padding:12px;border-radius:var(--r);background:rgba(22,163,74,.12);color:#16a34a;font-weight:600}
+.msg.err{background:rgba(220,38,38,.12);color:#dc2626}
+.contact{display:flex;flex-direction:column}
+.contact .row{display:flex;gap:14px;align-items:center;padding:14px;border-bottom:1px solid rgba(127,127,127,.15);cursor:pointer}
+.contact .row:last-child{border-bottom:0}
+.contact .ic{width:38px;height:38px;border-radius:50%;background:var(--p);color:var(--on-p);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mapf{width:100%;height:240px;border:0;border-radius:var(--r)}
+.social{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.social button{width:52px;height:52px;border-radius:50%;border:0;background:var(--p);color:var(--on-p);display:flex;align-items:center;justify-content:center;cursor:pointer}
+hr.dv{border:0;border-top:1px solid rgba(127,127,127,.25);margin:0;width:100%}
+.splash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;transition:opacity .4s}
+.splash img{width:110px;height:110px;object-fit:contain;border-radius:24px}
+.splash .nm{font-size:26px;font-weight:800}
+.badge{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);font-size:11px;opacity:.5;pointer-events:none}
+.adbar{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:6px 12px;background:var(--sf);color:var(--tx);text-decoration:none;flex-shrink:0;border-top:1px solid rgba(127,127,127,.18);border-bottom:1px solid rgba(127,127,127,.18)}
+.adbar img{max-height:44px;max-width:100%;object-fit:contain;border-radius:6px}
+.adbar .adtext{font-size:13px;font-weight:600}
+.adbar .adlabel{position:absolute;right:6px;top:1px;font-size:9px;font-style:normal;text-transform:uppercase;letter-spacing:.04em;opacity:.55}
+.adnote{padding:6px 12px;font-size:11px;text-align:center;border:1px dashed rgba(127,127,127,.5);color:var(--tx);opacity:.65;flex-shrink:0;margin:4px 8px;border-radius:8px}
+[data-block-id].sel{outline:2px dashed var(--s);outline-offset:3px}
+.preview [data-block-id]:hover{outline:1px dashed rgba(127,127,127,.6);outline-offset:3px}
+`;function x(){return window.FORJAPP_ENV??{apiBase:"",projectId:"",mode:"preview"}}var O=()=>window.ForjappNative;var R=new Map,pe=0;window.__forjappCallback=(e,t,r)=>{let i=R.get(e);i&&(R.delete(e),t?i.resolve(r):i.reject(new Error(r||"Error de red")))};function Y(e){return new Promise((t,r)=>{let i=`cb${++pe}`;R.set(i,{resolve:t,reject:r}),e(i),setTimeout(()=>{R.delete(i)&&r(new Error("Tiempo de espera agotado"))},2e4)})}async function X(e){let t=O();if(t)return Y(a=>t.httpGet(e,a));let{apiBase:r}=x(),i=await fetch(`${r}/api/v1/proxy?url=${encodeURIComponent(e)}`);if(!i.ok)throw new Error(`HTTP ${i.status}`);return i.text()}function k(e){let t=v(e,["http:","https:","tel:","mailto:","geo:","whatsapp:"]);if(!t)return;let r=O();r?r.openExternal(t):window.open(t,"_blank","noopener")}async function Q(){let e=O();if(!e)throw new Error("Las notificaciones push solo funcionan en la app instalada.");return Y(t=>e.enablePush(t))}function v(e,t=["http:","https:"]){if(typeof e!="string"||!e.trim())return"";try{let r=new URL(e.trim(),location.href);return r.protocol==="data:"&&t.includes("data:")&&/^data:image\//.test(e)||t.includes(r.protocol)?r.href:""}catch{return""}}function y(e){return typeof e!="string"||!e?"":e.startsWith("/")?`${x().apiBase}${e}`:e.startsWith("assets/")?e:v(e,["http:","https:","data:"])}var U=new Map,M={get(e){try{return localStorage.getItem(e)}catch{return U.get(e)??null}},set(e,t){try{localStorage.setItem(e,t)}catch{U.set(e,t)}},remove(e){try{localStorage.removeItem(e)}catch{U.delete(e)}}};var Z="forjapp:favorites",L={all(){try{return JSON.parse(M.get(Z)??"[]")}catch{return[]}},has(e){return L.all().some(t=>t.id===e)},toggle(e){let t=L.all(),r=t.findIndex(i=>i.id===e.id);return r>=0?t.splice(r,1):t.unshift(e),M.set(Z,JSON.stringify(t.slice(0,200))),r<0}};function ue(e){let t=n("button",{class:`fav ${L.has(e.id)?"on":""}`,"aria-label":"Favorito"},u("heart",20));return t.addEventListener("click",r=>{r.stopPropagation(),t.classList.toggle("on",L.toggle(e))}),t}function ge(e){return n("div",{class:"article"},e.image?n("img",{class:"img rounded",src:e.image,alt:""}):null,n("h2",{},e.title),n("div",{class:"muted"},[e.source,e.date].filter(Boolean).join(" \xB7 ")),n("p",{class:"tx"},e.summary),e.link?n("button",{class:"btn filled",onclick:()=>k(e.link)},u("external",18),"Leer noticia completa"):null,fe(e))}function fe(e){let t=()=>L.has(e.id)?"Quitar de favoritos":"Guardar en favoritos",r=n("button",{class:"btn outline"},u("heart",18),t());return r.addEventListener("click",()=>{L.toggle(e),r.lastChild.textContent=t()}),r}function P(e){return((e==null?void 0:e.textContent)??"").trim()}function me(e){var i;let t=new DOMParser().parseFromString(e,"text/html"),r=((i=t.querySelector("img"))==null?void 0:i.getAttribute("src"))??"";return{text:(t.body.textContent??"").replace(/\s+/g," ").trim(),img:r}}function he(e,t){let r=new DOMParser().parseFromString(e,"application/xml");if(r.querySelector("parsererror"))throw new Error("El feed no es un RSS/Atom v\xE1lido");return[...r.querySelectorAll("item, entry")].map((a,o)=>{var w,m,I;let c=P(a.querySelector("link"))||((w=a.querySelector("link"))==null?void 0:w.getAttribute("href"))||"",l=P(a.querySelector("description, summary, content")),{text:p,img:g}=me(l),h=((m=a.querySelector("enclosure[type^='image']"))==null?void 0:m.getAttribute("url"))||((I=[...a.getElementsByTagName("*")].find(C=>/(^|:)(content|thumbnail)$/.test(C.tagName)&&C.getAttribute("url")))==null?void 0:I.getAttribute("url"))||g,f=P(a.querySelector("pubDate, published, updated"));return{id:c||`${t}#${o}`,title:P(a.querySelector("title"))||"(sin t\xEDtulo)",link:v(c),date:f?new Date(f).toLocaleDateString():"",image:v(h),summary:p.slice(0,2e3),source:t}})}function q(e,t,r){return n("div",{class:"card rss-item",onclick:()=>t.pushView(e.source??"",ge(e))},r&&e.image?n("img",{src:e.image,alt:"",loading:"lazy"}):null,n("div",{style:{flex:"1",minWidth:"0"}},n("div",{class:"t"},e.title),n("div",{class:"m"},e.date)),ue(e))}function be(e,t){let r=e.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/),i=e.match(/vimeo\.com\/(\d+)/),a=n("div",{class:"vid"});if(r)a.appendChild(n("iframe",{src:`https://www.youtube-nocookie.com/embed/${r[1]}?playsinline=1${t?"&autoplay=1&mute=1":""}`,allow:"autoplay; encrypted-media; picture-in-picture; fullscreen",allowfullscreen:!0}));else if(i)a.appendChild(n("iframe",{src:`https://player.vimeo.com/video/${i[1]}${t?"?autoplay=1&muted=1":""}`,allow:"autoplay; fullscreen; picture-in-picture",allowfullscreen:!0}));else if(v(e)){let o=n("video",{src:v(e),controls:!0,playsinline:!0,preload:"metadata"});t&&(o.muted=!0,o.autoplay=!0),a.appendChild(o)}else a.appendChild(n("div",{class:"center",style:{color:"#fff"}},"A\xF1ade la URL de un v\xEDdeo"));return a}var z=null;function ee(e){return z&&z.src!==e&&z.pause(),(!z||z.src!==e)&&(z=new Audio(e)),z}var xe={hero:(e,t)=>{let r=y(e.image);return n("div",{class:"hero"},r?n("img",{src:r,alt:""}):null,n("div",{class:"ov"},n("h2",{},s(e.title)),s(e.subtitle)?n("p",{},s(e.subtitle)):null,s(e.buttonLabel)?n("button",{class:"btn",onclick:()=>s(e.buttonPage)&&t.navigate(s(e.buttonPage))},s(e.buttonLabel)):null))},heading:e=>n("h2",{class:`hd ${s(e.size,"md")}`,style:{textAlign:s(e.align,"left")}},s(e.text)),text:e=>n("p",{class:"tx",style:{textAlign:s(e.align,"left")}},s(e.text)),image:e=>{let t=y(e.src);return n("figure",{style:{margin:"0"}},t?n("img",{class:`img ${e.rounded?"rounded":""}`,src:t,alt:s(e.caption),loading:"lazy"}):n("div",{class:"card center"},u("images",32)),s(e.caption)?n("figcaption",{class:"caption"},s(e.caption)):null)},button:(e,t)=>n("button",{class:`btn ${s(e.variant,"filled")}`,onclick:()=>{let r=s(e.action,"page"),i=s(e.target).trim();r==="page"?t.navigate(s(e.page)):r==="url"?k(i):r==="tel"?k(`tel:${i.replace(/[^\d+]/g,"")}`):r==="mailto"&&k(`mailto:${i}`)}},s(e.label)),link:e=>n("a",{class:"lnk",onclick:()=>k(s(e.url))},s(e.label),u("external",16)),spacer:e=>n("div",{style:{height:`${A(e.height,24)}px`}}),divider:()=>n("hr",{class:"dv"}),cards:e=>{let t=s(e.layout,"list");return n("div",{class:`cards ${t}`},T(e.items).map(r=>{let i=y(r.image),a=s(r.url);return n("div",{class:"card",style:a?{cursor:"pointer"}:{},onclick:a?()=>k(a):void 0},i?n("img",{class:"img",src:i,alt:"",loading:"lazy"}):null,n("div",{class:"body"},n("div",{class:"t"},s(r.title)),s(r.text)?n("div",{class:"d"},s(r.text)):null,s(r.price)?n("div",{class:"pr"},s(r.price)):null))}))},gallery:e=>{let t=T(e.images).map(i=>({src:y(i.src),caption:s(i.caption)})).filter(i=>i.src);if(!t.length)return n("div",{class:"card center"},"A\xF1ade im\xE1genes a la galer\xEDa");let r=i=>{let a=i,o=n("img",{src:t[a].src,alt:""}),c=n("div",{style:{padding:"12px"}},t[a].caption),l=n("div",{class:"lightbox"},n("button",{class:"iconbtn",onclick:()=>l.remove()},u("close",26)),o,c);l.addEventListener("click",p=>{p.target===o&&(a=(a+1)%t.length,o.src=t[a].src,c.textContent=t[a].caption)}),document.body.appendChild(l)};return n("div",{class:"gal",style:{gridTemplateColumns:`repeat(${Math.min(4,Math.max(1,A(e.columns,2)))},1fr)`}},t.map((i,a)=>n("img",{src:i.src,alt:i.caption,loading:"lazy",onclick:()=>r(a)})))},video:e=>n("div",{},be(s(e.url),!!e.autoplay),s(e.title)?n("div",{class:"caption",style:{fontWeight:"600",opacity:"1"}},s(e.title)):null),radio:e=>{let t=v(e.streamUrl),r=y(e.cover),i=n("button",{class:"play","aria-label":"Reproducir"},u("play",34)),a=n("div",{class:"muted"},t?"Pulsa para escuchar":"Configura la URL del stream"),o=n("div",{class:"eq",style:{visibility:"hidden"}},n("i"),n("i"),n("i"),n("i")),c=l=>{let p=!l.paused;i.replaceChildren(u(p?"pause":"play",34)),o.style.visibility=p?"visible":"hidden",a.textContent=p?"En directo":"Pausado"};return i.addEventListener("click",()=>{if(!t)return;let l=ee(t);l.onplaying=l.onpause=()=>c(l),l.onwaiting=()=>a.textContent="Conectando\u2026",l.onerror=()=>a.textContent="No se pudo conectar con la emisora",l.paused?l.play().catch(()=>a.textContent="No se pudo reproducir"):l.pause()}),z&&z.src===t&&setTimeout(()=>c(z)),n("div",{class:"card radio"},r?n("img",{src:r,alt:""}):n("div",{class:"play",style:{width:"120px",height:"120px"}},u("radio",54)),n("div",{class:"st"},s(e.stationName)),s(e.slogan)?n("div",{class:"sl"},s(e.slogan)):null,i,o,a)},playlist:e=>{let t=T(e.tracks).filter(a=>v(a.url)),r=[],i=n("div",{class:"card"});return t.forEach((a,o)=>{let c=y(a.cover),l=n("span",{},u("play",20)),p=n("div",{class:"track"},c?n("img",{src:c,alt:""}):n("div",{class:"ph"}),n("div",{style:{flex:"1",minWidth:"0"}},n("div",{class:"t",style:{fontWeight:"600"}},s(a.title)),n("div",{class:"muted"},s(a.artist))),l);p.addEventListener("click",()=>{let g=ee(v(a.url));g.paused?g.play().catch(()=>{}):g.pause();let h=()=>r.forEach((f,w)=>{let m=w===o&&!g.paused;f.classList.toggle("on",m),f.lastElementChild.replaceChildren(u(m?"pause":"play",20))});g.onplay=g.onpause=h,g.onended=()=>{var f;return(f=r[o+1])==null?void 0:f.click()},h()}),r.push(p),i.appendChild(p)}),n("div",{},s(e.title)?n("h2",{class:"hd md",style:{marginBottom:"10px"}},s(e.title)):null,t.length?i:n("div",{class:"card center"},"A\xF1ade pistas de audio"))},rss:(e,t)=>{let r=v(e.feedUrl),i=n("div",{style:{display:"flex",flexDirection:"column",gap:"10px"}},n("div",{class:"spinner"}));if(!r)return i.replaceChildren(n("div",{class:"card center"},"Configura la URL del feed RSS")),i;let a=e.showImages!==!1;return X(r).then(o=>{let c="";try{c=new URL(r).hostname.replace(/^www\./,"")}catch{}let l=he(o,c).slice(0,Math.max(1,A(e.limit,10)));l.forEach(p=>t.rssCache.set(p.id,p)),i.replaceChildren(...l.length?l.map(p=>q(p,t,a)):[n("div",{class:"center"},"No hay noticias")])}).catch(o=>i.replaceChildren(n("div",{class:"msg err"},`No se pudieron cargar las noticias: ${o.message}`))),i},webview:e=>{let t=v(e.url),r=A(e.height,0);if(!t)return n("div",{class:"card center"},"Configura la URL");let i=n("iframe",{class:"web",src:t,style:r>0?{height:`${r}px`}:{minHeight:"70vh"},allow:"geolocation; fullscreen; autoplay"});return n("div",{class:"webwrap"},i,n("a",{class:"lnk",style:{padding:"0 14px 8px",fontSize:"13px"},onclick:()=>k(t)},"Abrir en el navegador",u("external",14)))},form:(e,t,r)=>{let i=T(e.fields),a=n("div"),o=n("button",{class:"btn filled",type:"submit"},s(e.submitLabel,"Enviar")),c=n("form",{class:"frm card",style:{padding:"16px"}},s(e.title)?n("h2",{class:"hd sm"},s(e.title)):null,i.map((l,p)=>{let g=s(l.kind,"text"),h=`f${p}`,f=g==="textarea"?n("textarea",{name:h,rows:4,required:!!l.required,maxlength:5e3}):n("input",{name:h,type:g,required:!!l.required,maxlength:500});return n("label",{},`${s(l.label)}${l.required?" *":""}`,f)}),o,a);return c.addEventListener("submit",async l=>{l.preventDefault();let p=new FormData(c),g={};i.forEach((m,I)=>g[s(m.label,`Campo ${I+1}`)]=String(p.get(`f${I}`)??""));let{apiBase:h,projectId:f,mode:w}=x();o.disabled=!0;try{let m=await fetch(`${h}/api/public/apps/${f}/forms`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({blockId:r.id,formTitle:s(e.title),data:g,source:w})});if(!m.ok)throw new Error((await m.json().catch(()=>({}))).error??`HTTP ${m.status}`);c.reset(),a.replaceChildren(n("div",{class:"msg"},s(e.successMessage,"\xA1Enviado!")))}catch(m){a.replaceChildren(n("div",{class:"msg err"},`No se pudo enviar: ${m.message}`))}finally{o.disabled=!1}}),c},contact:e=>{let t=[];return s(e.phone)&&t.push(["phone","Llamar",s(e.phone),`tel:${s(e.phone).replace(/[^\d+]/g,"")}`]),s(e.whatsapp)&&t.push(["whatsapp","WhatsApp",s(e.whatsapp),`https://wa.me/${s(e.whatsapp).replace(/[^\d]/g,"")}`]),s(e.email)&&t.push(["mail","Email",s(e.email),`mailto:${s(e.email)}`]),s(e.address)&&t.push(["map","Direcci\xF3n",s(e.address),`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s(e.address))}`]),!t.length&&!s(e.hours)?n("div",{class:"card center"},"A\xF1ade tus datos de contacto"):n("div",{class:"card contact"},t.map(([r,i,a,o])=>n("div",{class:"row",onclick:()=>k(o)},n("div",{class:"ic"},u(r,20)),n("div",{},n("div",{style:{fontWeight:"600"}},i),n("div",{class:"muted"},a)))),s(e.hours)?n("div",{class:"row",style:{cursor:"default"}},n("div",{class:"ic"},u("calendar",20)),n("div",{},n("div",{style:{fontWeight:"600"}},"Horario"),n("div",{class:"muted",style:{whiteSpace:"pre-wrap"}},s(e.hours)))):null)},map:e=>{let t=A(e.lat,40.4168),r=A(e.lng,-3.7038),i=A(e.zoom,15),a=.02/Math.pow(2,i-13),o=[r-a,t-a*.6,r+a,t+a*.6].map(c=>c.toFixed(5)).join(",");return n("div",{style:{display:"flex",flexDirection:"column",gap:"8px"}},n("iframe",{class:"mapf",src:`https://www.openstreetmap.org/export/embed.html?bbox=${o}&layer=mapnik&marker=${t},${r}`,loading:"lazy"}),n("button",{class:"btn outline",onclick:()=>k(`https://www.google.com/maps/dir/?api=1&destination=${t},${r}`)},u("map",18),`C\xF3mo llegar${s(e.label)?` a ${s(e.label)}`:""}`))},social:e=>n("div",{class:"social"},T(e.links).map(t=>n("button",{"aria-label":s(t.network),onclick:()=>k(s(t.url))},u(s(t.network,"web"),24)))),favorites:(e,t)=>{let r=L.all();return r.length?n("div",{style:{display:"flex",flexDirection:"column",gap:"10px"}},r.map(i=>q(i,t,!0))):n("div",{class:"center"},u("heart",36),n("p",{},s(e.emptyText,"A\xFAn no tienes favoritos.")))},search:(e,t)=>{let r=n("input",{class:"inp",type:"search",placeholder:s(e.placeholder,"Buscar\u2026")}),i=n("div",{style:{display:"flex",flexDirection:"column",gap:"8px"}}),a=()=>{let o=r.value.trim().toLowerCase();if(i.replaceChildren(),o.length<2)return;let c=[];for(let l of t.cfg.pages)[l.title,...l.blocks.flatMap(g=>D(g.props))].join(" ").toLowerCase().includes(o)&&c.push(n("div",{class:"card rss-item",onclick:()=>t.navigate(l.id)},u(l.icon),n("div",{class:"t"},l.title)));for(let l of[...t.rssCache.values(),...L.all()])`${l.title} ${l.summary}`.toLowerCase().includes(o)&&c.length<50&&c.push(q(l,t,!0));i.replaceChildren(...c.length?c:[n("div",{class:"center"},"Sin resultados")])};return r.addEventListener("input",a),n("div",{style:{display:"flex",flexDirection:"column",gap:"12px"}},r,i)},auth:e=>ve(e),push:e=>{let t=n("div"),r="forjapp:push",i=n("button",{class:"btn filled"},u("bell",18),M.get(r)?"Notificaciones activadas":"Activar notificaciones");return i.addEventListener("click",async()=>{try{let a=await Q(),{apiBase:o,projectId:c}=x();await fetch(`${o}/api/public/apps/${c}/push`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token:a,platform:"android"})}),M.set(r,"1"),i.lastChild.textContent="Notificaciones activadas",t.replaceChildren(n("div",{class:"msg"},"\xA1Listo! Recibir\xE1s nuestras novedades."))}catch(a){t.replaceChildren(n("div",{class:"msg err"},a.message))}}),n("div",{class:"card",style:{padding:"16px",display:"flex",flexDirection:"column",gap:"10px"}},n("h2",{class:"hd sm"},s(e.title)),n("p",{class:"tx muted"},s(e.text)),i,t)}};function D(e){return typeof e=="string"?/^https?:|^\/|^assets\//.test(e)?[]:[e]:Array.isArray(e)?e.flatMap(D):e&&typeof e=="object"?Object.values(e).flatMap(D):[]}var F="forjapp:user";function ve(e){let t=n("div",{class:"card",style:{padding:"16px"}}),r=()=>{let i=M.get(F);if(i){let c={};try{c=JSON.parse(i).user??{}}catch{}t.replaceChildren(n("div",{style:{display:"flex",flexDirection:"column",gap:"10px",alignItems:"center",textAlign:"center"}},n("div",{class:"ic",style:{width:"64px",height:"64px",borderRadius:"50%",background:"var(--p)",color:"var(--on-p)",display:"flex",alignItems:"center",justifyContent:"center"}},u("user",32)),n("div",{style:{fontWeight:"700",fontSize:"18px"}},c.name??""),n("div",{class:"muted"},c.email??""),n("button",{class:"btn outline",onclick:()=>{M.remove(F),r()}},"Cerrar sesi\xF3n")));return}let a="login",o=()=>{let c=n("div"),l=n("input",{name:"name",required:!0,maxlength:80}),p=n("input",{name:"email",type:"email",required:!0,maxlength:200}),g=n("input",{name:"password",type:"password",required:!0,minlength:8,maxlength:200}),h=n("button",{class:"btn filled",type:"submit"},a==="login"?"Entrar":"Crear cuenta"),f=n("form",{class:"frm"},n("h2",{class:"hd sm"},s(e.welcomeText,"Accede a tu cuenta")),a==="register"?n("label",{},"Nombre",l):null,n("label",{},"Email",p),n("label",{},"Contrase\xF1a",g),h,c,e.allowRegister!==!1?n("a",{class:"lnk",style:{justifyContent:"center"},onclick:()=>{a=a==="login"?"register":"login",o()}},a==="login"?"\xBFNo tienes cuenta? Reg\xEDstrate":"\xBFYa tienes cuenta? Entra"):null);f.addEventListener("submit",async w=>{w.preventDefault(),h.disabled=!0;let{apiBase:m,projectId:I}=x();try{let C=await fetch(`${m}/api/public/apps/${I}/auth/${a}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:l.value,email:p.value,password:g.value})}),E=await C.json().catch(()=>({}));if(!C.ok)throw new Error(E.error??`HTTP ${C.status}`);M.set(F,JSON.stringify({token:E.token,user:E.user})),r()}catch(C){c.replaceChildren(n("div",{class:"msg err"},C.message))}finally{h.disabled=!1}}),t.replaceChildren(f)};o()};return r(),t}function te(e,t){let r=xe[e.type],i;try{i=r?r(e.props??{},t,e):n("div",{class:"card center"},`M\xF3dulo no soportado: ${e.type}`)}catch(a){i=n("div",{class:"msg err"},`Error en el bloque: ${a.message}`)}return i.dataset.blockId=e.id,i}var j=null,ne=!1;function ye(e){let t=e.ads;return t&&t.enabled&&t.imageUrl&&t.linkUrl?t:null}function we(){let e=x().visitor;if(e)return e;let t=M.get("fj_vid");return t||(t=typeof crypto<"u"&&crypto.randomUUID?crypto.randomUUID():`${Date.now().toString(36)}${Math.random().toString(36).slice(2,12)}`,M.set("fj_vid",t)),t}function _(e,t,r,i){let a=x().mode==="app";return n("a",{class:"adbar",href:v(r)||void 0,target:"_blank",rel:"noopener sponsored","aria-label":"Publicidad",onclick:a?o=>{o.preventDefault(),k(r)}:void 0},e?n("img",{src:e,alt:t||"Publicidad"}):null,t?n("span",{class:"adtext"},t):null,n("em",{class:"adlabel"},i))}function re(e,t){let{mode:r,apiBase:i,projectId:a}=x(),o=ye(e);if(r==="preview"){let c=n("div",{style:{display:"contents"}});return o&&c.appendChild(_(y(o.imageUrl),o.label,o.linkUrl,"Tu anuncio")),c.appendChild(n("div",{class:"adnote"},o?"Forjapp mostrar\xE1 su publicidad al 20 % de los visitantes; el resto ver\xE1 tu anuncio.":"Sin anuncio propio, Forjapp mostrar\xE1 su publicidad al 100 % de los visitantes.")),{el:c,pos:o?o.position:"bottom"}}if(!ne){ne=!0;let c=`${i}/api/public/apps/${encodeURIComponent(a)}/ad?v=${encodeURIComponent(we())}${r==="app"?"&src=app":""}`;fetch(c).then(l=>l.ok?l.json():Promise.reject(new Error(String(l.status)))).then(l=>{j=l}).catch(()=>{j={source:o?"creator":"none"}}).finally(t)}return j?j.source==="forjapp"&&j.ad?{el:_(y(j.ad.imageUrl),j.ad.text,j.ad.clickUrl,"Publicidad \xB7 Forjapp"),pos:"bottom"}:j.source==="creator"&&o?{el:_(y(o.imageUrl),o.label,o.linkUrl,"Publicidad"),pos:o.position}:null:null}var d={cfg:null,pageId:"",history:[],view:null,drawerOpen:!1,selectedBlock:null},ke=new Map,S=()=>x().mode==="preview";function N(e){S()&&window.parent!==window&&window.parent.postMessage({source:"forjapp-runtime",...e},"*")}function ie(e,t){let r=document.getElementById(e);r||(r=document.createElement("style"),r.id=e,document.head.appendChild(r)),r.textContent!==t&&(r.textContent=t)}function Me(e){if(e==="Inter"&&x().mode==="app")return;let t="forjapp-font",r=`https://fonts.googleapis.com/css2?family=${encodeURIComponent(e)}:wght@400;600;700;800&display=swap`,i=document.getElementById(t);i||(i=document.createElement("link"),i.id=t,i.rel="stylesheet",document.head.appendChild(i)),i.href!==r&&(i.href=r)}function Ce(e){return e.pages.find(t=>t.id===d.pageId)??e.pages.find(t=>t.id===e.homePageId)??e.pages[0]}function H(e){let t=d.cfg;!t||!t.pages.some(r=>r.id===e)||(e!==d.pageId&&d.history.push(d.pageId),d.pageId=e,d.view=null,d.drawerOpen=!1,$(),N({type:"page-changed",pageId:e}))}function oe(){if(d.view)return d.view=null,$(),!0;if(d.drawerOpen)return d.drawerOpen=!1,$(),!0;let e=d.history.pop();return e?(d.pageId=e,$(),N({type:"page-changed",pageId:e}),!0):!1}window.forjappBack=oe;var Ee=e=>({cfg:e,navigate:H,rssCache:ke,pushView(t,r){d.view={title:t,content:r},$()}});function $(){let e=d.cfg,t=document.getElementById("app");if(!e||!t)return;let r=`${d.pageId}|${d.view?"v":""}`,i=t.querySelector("main"),a=(i==null?void 0:i.dataset.key)===r?i.scrollTop:0,o=Ce(e);d.pageId=o.id;let c=e.navigation,l=!!d.view||d.history.length>0&&!c.items.some(b=>b.pageId===o.id),p=y(e.branding.logoUrl),h=!!d.view||!o.hideHeader?n("header",{class:"topbar"},l?n("button",{class:"iconbtn","aria-label":"Atr\xE1s",onclick:oe},u("back")):c.type==="drawer"?n("button",{class:"iconbtn","aria-label":"Men\xFA",onclick:()=>{d.drawerOpen=!0,$()}},u("menu")):p?n("img",{class:"logo",src:p,alt:""}):null,n("h1",{},d.view?d.view.title||e.meta.name:o.id===e.homePageId&&!p?e.meta.name:o.title)):null,f=!d.view&&o.blocks.length===1&&o.blocks[0].type==="webview"&&!Number(o.blocks[0].props.height),w=n("div",{class:`page ${f?"flush":""}`});if(d.view)w.appendChild(d.view.content);else if(!o.blocks.length)w.appendChild(n("div",{class:"center"},S()?"P\xE1gina vac\xEDa: a\xF1ade bloques desde el editor":""));else for(let b of o.blocks){let B=te(b,Ee(e));S()&&(b.id===d.selectedBlock&&B.classList.add("sel"),B.addEventListener("click",()=>N({type:"block-click",pageId:o.id,blockId:b.id}),!0)),w.appendChild(B)}let m=n("main",{class:f?"full":"",dataset:{key:r}},w),I=c.type==="bottom"&&c.items.length?n("nav",{class:"tabbar"},c.items.map(b=>n("button",{class:b.pageId===o.id?"on":"",onclick:()=>H(b.pageId)},u(b.icon),b.label))):null,C=c.type==="drawer"&&d.drawerOpen?[n("div",{class:"drawer-bg",onclick:()=>{d.drawerOpen=!1,$()}}),n("aside",{class:"drawer"},n("header",{},p?n("img",{src:p,alt:"",style:{width:"36px",height:"36px",borderRadius:"8px"}}):null,e.meta.name),c.items.map(b=>n("button",{class:b.pageId===o.id?"on":"",onclick:()=>H(b.pageId)},u(b.icon),b.label)))]:[],E=re(e,$),se=E&&E.pos==="top"?E.el:null,le=E&&E.pos==="bottom"?E.el:null;t.replaceChildren(...[h,se,m,le,I,...C].filter(Boolean)),a&&(m.scrollTop=a)}function ze(e){if(S()||x().mode==="web")return;let t=y(e.branding.iconUrl||e.branding.logoUrl),r=n("div",{class:"splash",style:{background:e.branding.splashColor,color:"#fff"}},t?n("img",{src:t,alt:""}):n("div",{class:"nm"},e.meta.name));document.body.appendChild(r),setTimeout(()=>{r.style.opacity="0",setTimeout(()=>r.remove(),450)},900)}function V(e){let t=!d.cfg;d.cfg=e,ie("forjapp-base",K),ie("forjapp-theme",J(e)),Me(e.theme.font),document.documentElement.style.colorScheme=e.theme.mode,document.body.classList.toggle("preview",S()),document.getElementById("app")||document.body.appendChild(n("div",{id:"app"})),t&&(d.pageId=e.homePageId,ze(e)),$()}window.Forjapp={mount:V,navigate:H};window.addEventListener("message",e=>{let t=e.data;!t||typeof t!="object"||(t.type==="forjapp:config"&&t.config&&V(t.config),t.type==="forjapp:navigate"&&t.pageId&&H(t.pageId),t.type==="forjapp:select"&&(d.selectedBlock=t.blockId??null,document.querySelectorAll("[data-block-id]").forEach(r=>r.classList.toggle("sel",r.dataset.blockId===d.selectedBlock))))});function ae(){window.FORJAPP_CONFIG?V(window.FORJAPP_CONFIG):N({type:"ready"})}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",ae):ae();})();
+</script>
+</body>
+</html>
