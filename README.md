@@ -90,6 +90,8 @@ docker compose up -d --scale builder=3   # más compilaciones en paralelo
 
 ## Dirección web (appmaker7)
 
+Guía completa para ponerla en internet en un servidor: **[DEPLOY.md](DEPLOY.md)** (un solo comando: `sudo DOMAIN=appmaker7.com bash deploy/install.sh`).
+
 La plataforma se publica en **appmaker7** (por ejemplo `https://appmaker7.com`; cambia la terminación por el dominio que registres). Hay que hacer tres cosas, que no se pueden automatizar desde el código:
 
 1. **Registrar el dominio** y apuntar su DNS (registro `A`) a la IP de tu servidor.
